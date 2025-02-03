@@ -35,7 +35,7 @@ classifiers = [
 
 [tool.poetry]
 
-[tool.poetry.group.test.dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
 pylint = "^3.3.4"
 
@@ -47,3 +47,6 @@ build-backend = "poetry.core.masonry.api"
 [project.urls]
 Repository = "https://github.com/ojadeyemi/usports.git"
 Issues = "https://github.com/ojadeyemi/usports/issues"
+
+[tool.ruff]
+line-length = 120

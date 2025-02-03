@@ -22,8 +22,6 @@ Date Created:
     February 1, 2025
 """
 
-
-
 from .player_stats import usport_players_stats
 from .team_stats import usport_team_stats
 

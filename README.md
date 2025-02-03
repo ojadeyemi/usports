@@ -7,10 +7,10 @@ A Python package for fetching current cumulative sports statistics from U Sports
 ## 🚀 Installation
 
 ```bash
-pip install git+https://github.com/ojadeyemi/usports.git
+poetry add git+https://github.com/ojadeyemi/usports.git
 ```
 
-## 🎓 Supported Sports
+## Supported Sports
 
 - **Basketball (Men's & Women's)** _(Available)_
 - **Football** _(In Progress)_
@@ -18,7 +18,7 @@ pip install git+https://github.com/ojadeyemi/usports.git
 - **Ice Hockey (Men's & Women's)** _(In Progress)_
 - **Soccer (Men's & Women's)** _(In Progress)_
 
-## 📈 Usage
+## Usage
 
 ```python
 from usports.basketball import usport_players_stats, usport_team_stats

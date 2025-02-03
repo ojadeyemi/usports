@@ -29,9 +29,7 @@ from .constants import PLAYER_SORT_CATEGORIES, PLAYER_STATS_COLUMNS_TYPE_MAPPING
 logger = setup_logging()
 
 
-def _parse_player_stats_table(
-    soup: BeautifulSoup, columns: list[str]
-) -> list[dict[str, Any]]:
+def _parse_player_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
     """Parse player stats data from an HTML table."""
     table_data: list[dict[str, Any]] = []
     rows: list[Tag] = soup.find_all("tr")
@@ -48,9 +46,7 @@ def _parse_player_stats_table(
             # Parse the rest of the columns
             for i, col_name in enumerate(columns):
                 if i + BASKETBALL_PLAYER_STATS_OFFSET < len(cols):
-                    value = clean_text(
-                        cols[i + BASKETBALL_PLAYER_STATS_OFFSET].get_text()
-                    )
+                    value = clean_text(cols[i + BASKETBALL_PLAYER_STATS_OFFSET].get_text())
 
                     if col_name.endswith("_made"):
                         made, attempted = split_made_attempted(value)
@@ -64,9 +60,7 @@ def _parse_player_stats_table(
     return table_data
 
 
-def _merge_player_data(
-    existing_data: list[dict[str, Any]], new_data: list[dict[str, Any]]
-) -> list[dict[str, Any]]:
+def _merge_player_data(existing_data: list[dict[str, Any]], new_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Merge existing and new player data by (name, school, games_played)."""
 
     def key_func(d: dict[str, Any]) -> str:
@@ -91,12 +85,8 @@ async def _fetching_player_stats(url: str) -> list[dict[str, Any]]:
 
         all_data = []
         for i, column_mapping in enumerate(PLAYER_STATS_COLUMNS_TYPE_MAPPING):
-            soup = BeautifulSoup(
-                tables_html[i + PLAYER_SEASON_TOTALS_STATS_START_INDEX], BS4_PARSER
-            )
-            table_data = _parse_player_stats_table(
-                soup, columns=list(column_mapping.keys())
-            )
+            soup = BeautifulSoup(tables_html[i + PLAYER_SEASON_TOTALS_STATS_START_INDEX], BS4_PARSER)
+            table_data = _parse_player_stats_table(soup, columns=list(column_mapping.keys()))
             all_data = _merge_player_data(all_data, table_data)
 
         return all_data
@@ -116,9 +106,7 @@ async def _get_players_stats_df(stats_url: str) -> pd.DataFrame:
 
     # Split the player_name into (lastname_initials, first_name)
     if not df.empty:
-        df[["lastname_initials", "first_name"]] = df["player_name"].str.split(
-            " ", n=1, expand=True
-        )
+        df[["lastname_initials", "first_name"]] = df["player_name"].str.split(" ", n=1, expand=True)
 
     combined_type_mapping = {
         "player_name": str,
@@ -140,14 +128,9 @@ async def _get_players_stats_df(stats_url: str) -> pd.DataFrame:
 def _construct_player_urls(gender: str, season_option: str) -> list[str]:
     sport = get_sport_identifier(gender)
     season = validate_season_option(season_option, SEASON_URLS)
-    player_stats_url_template = (
-        f"{BASE_URL}/{sport}/{season}/players?pos=sh&r=0&sort={{sort_category}}"
-    )
+    player_stats_url_template = f"{BASE_URL}/{sport}/{season}/players?pos=sh&r=0&sort={{sort_category}}"
 
-    urls = [
-        player_stats_url_template.format(sort_category=category)
-        for category in PLAYER_SORT_CATEGORIES
-    ]
+    urls = [player_stats_url_template.format(sort_category=category) for category in PLAYER_SORT_CATEGORIES]
 
     return urls
 
@@ -161,9 +144,7 @@ async def _fetch_and_merge_player_stats(urls: list[str]) -> pd.DataFrame:
     if not all_df:
         raise EmptyDataError("No player stats data found.")
 
-    merged_df = (
-        concat(all_df, ignore_index=True).drop_duplicates().reset_index(drop=True)
-    )
+    merged_df = concat(all_df, ignore_index=True).drop_duplicates().reset_index(drop=True)
 
     return merged_df
 

@@ -25,9 +25,7 @@ from .constants import (
 logger = setup_logging()
 
 
-def _parse_team_stats_table(
-    soup: BeautifulSoup, columns: list[str]
-) -> list[dict[str, Any]]:
+def _parse_team_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
     """Parse team stats data from an HTML table"""
     table_data: list[dict[str, Any]] = []
     rows: list[Tag] = soup.find_all("tr")[1:]
@@ -61,9 +59,7 @@ def _parse_team_stats_table(
     return table_data
 
 
-def _parse_standings_table(
-    soup: BeautifulSoup, columns: list[str]
-) -> list[dict[str, Any]]:
+def _parse_standings_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
     """Parse standings data from an HTML table"""
     table_data: list[dict[str, Any]] = []
 
@@ -92,9 +88,7 @@ def _parse_standings_table(
     return table_data
 
 
-def _merge_team_data(
-    existing_data: list[dict[str, Any]], new_data: list[dict[str, Any]]
-) -> list[dict[str, Any]]:
+def _merge_team_data(existing_data: list[dict[str, Any]], new_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Merge existing and new team data stats"""
 
     def key_func(d: dict[str, Any]) -> str:
@@ -164,9 +158,7 @@ async def _get_team_stats_df(stats_url: str) -> pd.DataFrame:
     invalid_rows_count = df[df["games_played"] == "-"].shape[0]
 
     if invalid_rows_count > 0:
-        logger.debug(
-            f"\nDropping {invalid_rows_count} rows with invalid 'games_played' values\n"
-        )
+        logger.debug(f"\nDropping {invalid_rows_count} rows with invalid 'games_played' values\n")
         df = df[df["games_played"] != "-"]
 
     combined_type_mapping: dict[str, type] = {"team_name": str, "games_played": int}
@@ -174,7 +166,7 @@ async def _get_team_stats_df(stats_url: str) -> pd.DataFrame:
     for mapping in TEAM_STATS_COLUMNS_TYPE_MAPPING:
         combined_type_mapping.update(mapping)
 
-    df = convert_types(df, combined_type_mapping) # type: ignore
+    df = convert_types(df, combined_type_mapping)  # type: ignore
 
     return df
 
@@ -204,25 +196,19 @@ def _construct_team_urls(gender: str, season_option: str) -> tuple[str, str]:
 async def _combine_data(gender: str, season_option: str) -> pd.DataFrame:
     """Combine team stats and standings data into a single DataFrame."""
     if season_option not in SEASON_URLS:
-        raise ValueError(
-            f"Invalid season_option: {season_option}. Must be one of {', '.join(SEASON_URLS.keys())}"
-        )
+        raise ValueError(f"Invalid season_option: {season_option}. Must be one of {', '.join(SEASON_URLS.keys())}")
 
     team_stats_url, standings_url = _construct_team_urls(gender, season_option)
 
     logger.debug(f"FETCHING {gender.upper()} {season_option.upper()} SEASON STANDINGS")
     standings_df = await _get_standings_df(standings_url)
 
-    logger.debug(
-        f"FETCHING {gender.upper()} {season_option.upper()} SEASON STATISTICS\n"
-    )
+    logger.debug(f"FETCHING {gender.upper()} {season_option.upper()} SEASON STATISTICS\n")
     team_stats_df = await _get_team_stats_df(team_stats_url)
 
     # Rename columns for playoff & championship merges
     if season_option in ["playoffs", "championship"]:
-        standings_df.columns = [
-            f"reg_{col}" if col != "team_name" else col for col in standings_df.columns
-        ]
+        standings_df.columns = [f"reg_{col}" if col != "team_name" else col for col in standings_df.columns]
 
     # Merge only on "team_name" first, keeping all teams in standings
     combined_df = pd.merge(
@@ -234,19 +220,13 @@ async def _combine_data(gender: str, season_option: str) -> pd.DataFrame:
     )
 
     # Override "games_played" from team_stats with standings if available
-    combined_df["games_played"] = combined_df["games_played_standings"].fillna(
-        combined_df["games_played_team_stats"]
-    )
+    combined_df["games_played"] = combined_df["games_played_standings"].fillna(combined_df["games_played_team_stats"])
 
     # Drop the extra "games_played_team_stats" column
-    combined_df = combined_df.drop(
-        columns=["games_played_standings", "games_played_team_stats"]
-    )
+    combined_df = combined_df.drop(columns=["games_played_standings", "games_played_team_stats"])
 
     # Add conference mapping
-    combined_df["conference"] = (
-        combined_df["team_name"].map(TEAM_CONFERENCES).astype(str)
-    )
+    combined_df["conference"] = combined_df["team_name"].map(TEAM_CONFERENCES).astype(str)
 
     return combined_df
 
