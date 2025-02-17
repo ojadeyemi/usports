@@ -101,12 +101,8 @@ async def _fetching_player_stats(url: str) -> list[dict[str, Any]]:
 async def _get_players_stats_df(stats_url: str) -> pd.DataFrame:
     """Fetch player stats from a page and return a cleaned DataFrame."""
     logger.debug(f"Fetching player stats on category: {stats_url[-5:]}")
-    player_stats = await _fetching_player_stats(stats_url)
-    df = pd.DataFrame(player_stats)
 
-    # Split the player_name into (lastname_initials, first_name)
-    if not df.empty:
-        df[["lastname_initials", "first_name"]] = df["player_name"].str.split(" ", n=1, expand=True)
+    player_stats = await _fetching_player_stats(stats_url)
 
     combined_type_mapping = {
         "player_name": str,
@@ -116,6 +112,14 @@ async def _get_players_stats_df(stats_url: str) -> pd.DataFrame:
     }
     for mapping in PLAYER_STATS_COLUMNS_TYPE_MAPPING:
         combined_type_mapping.update(mapping)
+
+    df = pd.DataFrame(player_stats)
+
+    if not player_stats or df.empty:
+        return pd.DataFrame(columns=combined_type_mapping.keys())
+
+    if "player_name" in df.columns:
+        df[["lastname_initials", "first_name"]] = df["player_name"].str.split(" ", n=1, expand=True)
 
     df = convert_types(df, combined_type_mapping)
 

@@ -152,19 +152,21 @@ async def _fetching_standings(url: str) -> list[dict[str, Any]]:
 async def _get_team_stats_df(stats_url: str) -> pd.DataFrame:
     """function to handle teams stats to a pandas DataFrame"""
     team_stats = await _fetching_team_stats(stats_url)
-
     df = pd.DataFrame(team_stats)
+
+    combined_type_mapping: dict[str, type] = {"team_name": str, "games_played": int}
+
+    for mapping in TEAM_STATS_COLUMNS_TYPE_MAPPING:
+        combined_type_mapping.update(mapping)
+
+    if not team_stats or df.empty:
+        return pd.DataFrame(columns=combined_type_mapping.keys())
 
     invalid_rows_count = df[df["games_played"] == "-"].shape[0]
 
     if invalid_rows_count > 0:
         logger.debug(f"\nDropping {invalid_rows_count} rows with invalid 'games_played' values\n")
         df = df[df["games_played"] != "-"]
-
-    combined_type_mapping: dict[str, type] = {"team_name": str, "games_played": int}
-
-    for mapping in TEAM_STATS_COLUMNS_TYPE_MAPPING:
-        combined_type_mapping.update(mapping)
 
     df = convert_types(df, combined_type_mapping)  # type: ignore
 
@@ -176,6 +178,9 @@ async def _get_standings_df(standings_url: str) -> pd.DataFrame:
     standings_data = await _fetching_standings(standings_url)
 
     standings_df = pd.DataFrame(standings_data)
+
+    if not standings_data or standings_df.empty:
+        return pd.DataFrame(columns=STANDINGS_COLUMNS_TYPE_MAPPING.keys())
 
     standings_df = convert_types(standings_df, STANDINGS_COLUMNS_TYPE_MAPPING)
     standings_df = standings_df.drop(columns=["ties"])
@@ -219,14 +224,17 @@ async def _combine_data(gender: str, season_option: str) -> pd.DataFrame:
         suffixes=("_standings", "_team_stats"),
     )
 
-    # Override "games_played" from team_stats with standings if available
-    combined_df["games_played"] = combined_df["games_played_standings"].fillna(combined_df["games_played_team_stats"])
+    if not combined_df.empty:
+        # Override "games_played" from team_stats with standings if available
+        combined_df["games_played"] = combined_df["games_played_standings"].fillna(
+            combined_df["games_played_team_stats"]
+        )
 
-    # Drop the extra "games_played_team_stats" column
-    combined_df = combined_df.drop(columns=["games_played_standings", "games_played_team_stats"])
+        # Drop the extra "games_played_team_stats" column
+        combined_df = combined_df.drop(columns=["games_played_standings", "games_played_team_stats"])
 
-    # Add conference mapping
-    combined_df["conference"] = combined_df["team_name"].map(TEAM_CONFERENCES).astype(str)
+        # Add conference mapping
+        combined_df["conference"] = combined_df["team_name"].map(TEAM_CONFERENCES).astype(str)
 
     return combined_df
 
