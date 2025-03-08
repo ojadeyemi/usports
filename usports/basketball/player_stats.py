@@ -32,10 +32,10 @@ logger = setup_logging()
 def _parse_player_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
     """Parse player stats data from an HTML table."""
     table_data: list[dict[str, Any]] = []
-    rows: list[Tag] = soup.find_all("tr")
+    rows: list[Tag] = soup.find_all("tr")  # type: ignore
 
     for row in rows:
-        cols: list[Tag] = row.find_all("td")
+        cols: list[Tag] = row.find_all("td")  # type: ignore
         if len(cols) > 1:
             row_data = {}
             row_data["player_name"] = clean_text(cols[1].get_text())
@@ -116,7 +116,7 @@ async def _get_players_stats_df(stats_url: str) -> pd.DataFrame:
     df = pd.DataFrame(player_stats)
 
     if not player_stats or df.empty:
-        return pd.DataFrame(columns=combined_type_mapping.keys())
+        return pd.DataFrame(columns=combined_type_mapping.keys())  # type: ignore
 
     if "player_name" in df.columns:
         df[["lastname_initials", "first_name"]] = df["player_name"].str.split(" ", n=1, expand=True)

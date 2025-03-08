@@ -13,6 +13,13 @@ SEASON_URLS = {
     "championship": f"{SEASON}c",
 }
 
+OUA = "OUA"
+RSEQ = "RSEQ"
+CW = "CW"
+AUS = "AUS"
+
+CONFERENCES = Literal["OUA", "RSEQ", "CW", "AUS"]
+
 # Base URL for the U Sports website
 BASE_URL = "https://universitysport.prestosports.com/sports"
 
@@ -45,6 +52,7 @@ TeamName = Literal[
     "McGill",
     "McMaster",
     "Memorial",
+    "Montreal",
     "Mount Royal",
     "Nipissing",
     "Ontario Tech",
@@ -53,6 +61,7 @@ TeamName = Literal[
     "Regina",
     "Saint Mary's",
     "Saskatchewan",
+    "Sherbooke",
     "StFX",
     "Thompson Rivers",
     "Toronto",

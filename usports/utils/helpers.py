@@ -6,7 +6,7 @@ import httpx
 from bs4 import BeautifulSoup
 from pandas import DataFrame
 
-from .constants import TIMEOUT, BS4_PARSER
+from .constants import BS4_PARSER, TIMEOUT
 from .headers import get_random_header
 
 
@@ -58,7 +58,7 @@ def convert_types(df: DataFrame, type_mapping: dict[str, type]) -> DataFrame:
     """Convert DataFrame columns to specified types."""
     for column, dtype in type_mapping.items():
         if dtype in [int, float]:
-            df[column] = df[column].replace("-", 0)
+            df[column] = df[column].astype(str).replace("-", 0)
 
         df[column] = df[column].astype(dtype)
 
