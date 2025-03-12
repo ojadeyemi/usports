@@ -2,21 +2,28 @@
 
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-A Python package for fetching current cumulative sports statistics from U Sports.
+A Python package that retrieves current cumulative team sports statistics from U Sports.
+
+This lightweight tool helps you easily access and analyze the latest statistical data from Canadian university sports leagues.
 
 ## 🚀 Installation
 
 ```bash
+pip install git+https://github.com/ojadeyemi/usports.git
+# OR
 poetry add git+https://github.com/ojadeyemi/usports.git
 ```
 
 ## Supported Sports
 
-- **Basketball (Men's & Women's)** _(Available)_
-- **Football** _(In Progress)_
-- **Volleyball (Men's & Women's)** _(In Progress)_
-- **Ice Hockey (Men's & Women's)** _(In Progress)_
-- **Soccer (Men's & Women's)** _(In Progress)_
+| Sport        | Status         | League      |
+| ------------ | -------------- | ----------- |
+| Basketball   | ✅ Available   | Men & Women |
+| Football     | 🔄 In Progress | Men         |
+| Volleyball   | 🔄 In Progress | Men & Women |
+| Ice Hockey   | 🔄 In Progress | Men & Women |
+| Soccer       | 🔄 In Progress | Men & Women |
+| Field Hockey | 🔄 In Progress | Women       |
 
 ## Usage
 

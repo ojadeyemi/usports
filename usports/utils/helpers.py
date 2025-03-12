@@ -58,7 +58,7 @@ def convert_types(df: DataFrame, type_mapping: dict[str, type]) -> DataFrame:
     """Convert DataFrame columns to specified types."""
     for column, dtype in type_mapping.items():
         if dtype in [int, float]:
-            df[column] = df[column].astype(str).replace("-", 0)
+            df[column] = df[column].astype(str).replace("-", "0")
 
         df[column] = df[column].astype(dtype)
 
