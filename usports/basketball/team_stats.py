@@ -4,21 +4,20 @@ from typing import Any, Literal
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
 
+from usports.basketball.player_stats import _get_sport_identifier
 from usports.utils import (
     clean_text,
     convert_types,
     fetch_page_html,
-    get_sport_identifier,
     normalize_gender_arg,
     setup_logging,
     split_made_attempted,
     validate_season_option,
 )
-from usports.utils.constants import BASE_URL, BS4_PARSER, SEASON_URLS
+from usports.utils.constants import BASE_URL, BS4_PARSER, SEASON_URLS, TEAM_CONFERENCES
 
 from .constants import (
     STANDINGS_COLUMNS_TYPE_MAPPING,
-    TEAM_CONFERENCES,
     TEAM_STATS_COLUMNS_TYPE_MAPPING,
 )
 
@@ -189,7 +188,7 @@ async def _get_standings_df(standings_url: str) -> pd.DataFrame:
 
 
 def _construct_team_urls(gender: str, season_option: str) -> tuple[str, str]:
-    sport = get_sport_identifier(gender)
+    sport = _get_sport_identifier(gender)
     season = validate_season_option(season_option, SEASON_URLS)
 
     team_stats_url = f"{BASE_URL}/{sport}/{season}/teams"

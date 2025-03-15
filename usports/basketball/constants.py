@@ -1,7 +1,5 @@
 """Contains mappings and configurations for team statistics, player statistics, conferences, and standings."""
 
-from usports.utils.constants import AUS, CW, OUA, RSEQ
-
 TEAM_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     {
         "field_goal_made": int,
@@ -55,57 +53,6 @@ TEAM_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     },
 ]
 
-
-TEAM_CONFERENCES = {
-    "Acadia": AUS,
-    "Alberta": CW,
-    "Algoma": OUA,
-    "Bishop's": RSEQ,
-    "Brandon": CW,
-    "Brock": OUA,
-    "Calgary": CW,
-    "Cape Breton": AUS,
-    "Carleton": OUA,
-    "Concordia": RSEQ,
-    "Dalhousie": AUS,
-    "Guelph": OUA,
-    "Lakehead": OUA,
-    "Laurentian": OUA,
-    "Laurier": OUA,
-    "Laval": RSEQ,
-    "Lethbridge": CW,
-    "MacEwan": CW,
-    "Manitoba": CW,
-    "McGill": RSEQ,
-    "McMaster": OUA,
-    "Memorial": AUS,
-    "Mount Royal": CW,
-    "Nipissing": OUA,
-    "Ontario Tech": OUA,
-    "Ottawa": OUA,
-    "Queen's": OUA,
-    "Regina": CW,
-    "Saint Mary's": AUS,
-    "Saskatchewan": CW,
-    "StFX": AUS,
-    "Thompson Rivers": CW,
-    "Toronto": OUA,
-    "Toronto Metropolitan": OUA,
-    "Trinity Western": CW,
-    "UBC": CW,
-    "UBC Okanagan": CW,
-    "UFV": CW,
-    "UNB": AUS,
-    "UNBC": CW,
-    "UPEI": AUS,
-    "UQAM": RSEQ,
-    "Victoria": CW,
-    "Waterloo": OUA,
-    "Western": OUA,
-    "Windsor": OUA,
-    "Winnipeg": CW,
-    "York": OUA,
-}
 
 STANDINGS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
     "team_name": str,

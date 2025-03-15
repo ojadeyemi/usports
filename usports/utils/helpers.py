@@ -65,17 +65,6 @@ def convert_types(df: DataFrame, type_mapping: dict[str, type]) -> DataFrame:
     return df
 
 
-def get_sport_identifier(gender: str) -> str:
-    """Get the sport identifier based on gender."""
-    if gender == "men":
-        return "mbkb"
-
-    if gender == "women":
-        return "wbkb"
-
-    raise ValueError("Argument must be 'men' or 'women'")
-
-
 def normalize_gender_arg(arg: Literal["m", "men", "w", "women"]) -> str:
     """Normalize the 'arg' input to 'men' or 'women'."""
     arg_lower = arg.lower()

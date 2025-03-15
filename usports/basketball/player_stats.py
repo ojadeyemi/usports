@@ -3,14 +3,12 @@ from typing import Any, Literal
 
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
-from pandas import concat
 from pandas.errors import EmptyDataError
 
 from usports.utils import (
     clean_text,
     convert_types,
     fetch_page_html,
-    get_sport_identifier,
     normalize_gender_arg,
     setup_logging,
     split_made_attempted,
@@ -27,6 +25,17 @@ from usports.utils.constants import (
 from .constants import PLAYER_SORT_CATEGORIES, PLAYER_STATS_COLUMNS_TYPE_MAPPING
 
 logger = setup_logging()
+
+
+def _get_sport_identifier(gender: str) -> str:
+    """Get the sport identifier based on gender."""
+    if gender == "men":
+        return "mbkb"
+
+    if gender == "women":
+        return "wbkb"
+
+    raise ValueError("Argument must be 'men' or 'women'")
 
 
 def _parse_player_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
@@ -130,7 +139,7 @@ async def _get_players_stats_df(stats_url: str) -> pd.DataFrame:
 
 
 def _construct_player_urls(gender: str, season_option: str) -> list[str]:
-    sport = get_sport_identifier(gender)
+    sport = _get_sport_identifier(gender)
     season = validate_season_option(season_option, SEASON_URLS)
     player_stats_url_template = f"{BASE_URL}/{sport}/{season}/players?pos=sh&r=0&sort={{sort_category}}"
 
@@ -140,7 +149,7 @@ def _construct_player_urls(gender: str, season_option: str) -> list[str]:
 
 
 async def _fetch_and_merge_player_stats(urls: list[str]) -> pd.DataFrame:
-    all_df = []
+    all_df: list[pd.DataFrame] = []
     tasks = [_get_players_stats_df(url) for url in urls]
     results = await asyncio.gather(*tasks)
     all_df.extend(results)
@@ -148,8 +157,10 @@ async def _fetch_and_merge_player_stats(urls: list[str]) -> pd.DataFrame:
     if not all_df:
         raise EmptyDataError("No player stats data found.")
 
-    merged_df = concat(all_df, ignore_index=True).drop_duplicates().reset_index(drop=True)
+    # Remove rows that are all NA from each DataFrame
+    cleaned_dfs = [df.dropna(how="all") for df in all_df]
 
+    merged_df = pd.concat(cleaned_dfs, ignore_index=True).drop_duplicates().reset_index(drop=True)
     return merged_df
 
 
