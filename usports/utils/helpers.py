@@ -3,6 +3,7 @@ import unicodedata
 from typing import Any, Literal
 
 import httpx
+import pandas as pd
 from bs4 import BeautifulSoup
 from pandas import DataFrame
 
@@ -60,12 +61,16 @@ def clean_text(text: str) -> str:
 
 
 def convert_types(df: DataFrame, type_mapping: dict[str, type]) -> DataFrame:
-    """Convert DataFrame columns to specified types."""
+    """Convert DataFrame columns to specified types, handling missing values correctly."""
     for column, dtype in type_mapping.items():
-        if dtype in [int, float]:
-            df[column] = df[column].astype(str).replace("-", "0")
+        if column in df.columns:
+            if dtype in [int, float]:
+                df[column] = df[column].astype(str).replace(["-", "nan", ""], "0")
 
-        df[column] = df[column].astype(dtype)
+                # Convert to numeric type, forcing errors to NaN before casting
+                df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0)
+
+            df[column] = df[column].astype(dtype)
 
     return df
 

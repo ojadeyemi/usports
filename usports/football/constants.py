@@ -126,3 +126,124 @@ STANDINGS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
     "total_points": int,
     "total_points_against": int,
 }
+
+FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
+    # Passing stats
+    {
+        "pass_completions": int,  # comp
+        "pass_attempts": int,  # att
+        "completion_percentage": float,  # pct
+        "passing_yards": int,  # yds
+        "passing_yards_per_game": float,  # y/g
+        "yards_per_attempt": float,  # y/a
+        "passing_touchdowns": int,  # td
+        "interceptions": int,  # int
+        "longest_pass": int,  # lg
+        "passing_efficiency": float,  # effic
+    },
+    # Rushing stats
+    {
+        "rushing_attempts": int,  # rush
+        "rushing_yards": int,  # yds
+        "rushing_yards_per_game": float,  # y/g
+        "yards_per_carry": float,  # avg
+        "rushing_touchdowns": int,  # td
+        "longest_rush": int,  # lg
+        "fumbles": int,  # fum
+        "fumbles_lost": int,  # lost
+    },
+    # Receiving stats
+    {
+        "receptions": int,  # rec
+        "receptions_per_game": float,  # rec/g
+        "receiving_yards": int,  # yds
+        "receiving_yards_per_game": float,  # y/g
+        "yards_per_reception": float,  # avg
+        "receiving_touchdowns": int,  # td
+        "longest_reception": int,  # lg
+    },
+    # Kicking stats
+    {
+        "field_goals_made": int,  # fgm
+        "field_goals_attempted": int,  # fga
+        "field_goal_percentage": float,  # pct
+        "longest_field_goal": int,  # lg
+        "extra_points_made": int,  # xpm
+        "extra_points_attempted": int,  # xpa
+        "extra_point_percentage": float,  # pct (for extra points)
+        "kicking_points": int,  # pts
+    },
+    # Punting stats
+    {
+        "punts": int,  # punt
+        "punting_yards": int,  # yds
+        "yards_per_punt": float,  # avg
+        "longest_punt": int,  # lg
+        "punts_inside_20": int,  # in20
+        "fair_catches": int,  # fc
+        "touchbacks": int,  # tb
+        "blocked_punts": int,  # blk
+    },
+    # Return stats
+    {
+        "kick_returns": int,  # kr
+        "kick_return_yards": int,  # yds
+        "yards_per_kick_return": float,  # avg
+        "kick_return_touchdowns": int,  # td
+        "longest_kick_return": int,  # lg
+        "punt_returns": int,  # pr
+        "punt_return_yards": int,  # yds
+        "yards_per_punt_return": float,  # avg
+        "punt_return_touchdowns": int,  # td
+        "longest_punt_return": int,  # lg
+    },
+    # All-Purpose yards stats
+    {
+        "all_purpose_rushing_yards": int,  # rush
+        "all_purpose_receiving_yards": int,  # rcv
+        "all_purpose_punt_return_yards": int,  # pr
+        "all_purpose_kick_return_yards": int,  # kr
+        "all_purpose_total_yards": int,  # yds
+        "all_purpose_yards_per_game": float,  # ypg
+    },
+    # Scoring stats
+    {
+        "total_points": int,  # pts
+        "points_per_game": float,  # pts/g
+        "rushing_touchdowns": int,  # rush
+        "receiving_touchdowns": int,  # rec
+        "kick_return_touchdowns": int,  # kr
+        "punt_return_touchdowns": int,  # pr
+        "interception_return_touchdowns": int,  # int
+        "fumble_return_touchdowns": int,  # fum
+        "extra_points_made": int,  # xpm
+        "field_goals_made": int,  # fgm
+        "two_point_conversions": int,  # 2pt
+        "miscellaneous_touchdowns": int,  # misc
+    },
+    # Defensive stats
+    {
+        "solo_tackles": int,  # tkl
+        "assisted_tackles": int,  # ast
+        "total_tackles": float,  # tot (some leagues count half tackles)
+        "tackles_per_game": float,  # tkl/g
+        "sacks": float,  # sck
+        "sack_yards": int,  # yds (yards lost from sacks)
+        "tackles_for_loss": float,  # tfl
+        "tackles_for_loss_yards": int,  # yds
+        "forced_fumbles": int,  # ff
+        "fumble_recoveries": int,  # fr
+        "fumble_recovery_yards": int,  # yds
+        "interceptions": int,  # int
+        "interception_return_yards": int,  # yds
+        "pass_breakups": int,  # brup
+        "blocked_kicks": int,  # blk
+    },
+]
+
+PLAYER_SORT_CATEGORIES = [
+    ("qb", "pyd"),
+    ("rb", "ryd"),
+    ("wr", "wyd"),
+    ("k", "fglg"),
+]

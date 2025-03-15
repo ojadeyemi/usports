@@ -263,7 +263,7 @@ async def _combine_data(season_option: str) -> pd.DataFrame:
 
 def usport_football_team_stats(season_option: SeasonType = "regular") -> pd.DataFrame:
     """
-    Retrieve and combine U Sports football team stats.
+    Retrieve U Sports men football team stats.
 
         Args:
         season_option (str): The season type to fetch data for. Options are:
