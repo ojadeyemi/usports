@@ -19,10 +19,10 @@ Modules:
 
 from .headers import get_random_header
 from .helpers import (
+    _merge_team_data,
     clean_text,
     convert_types,
     fetch_page_html,
-    get_sport_identifier,
     normalize_gender_arg,
     split_made_attempted,
     validate_season_option,
@@ -30,13 +30,13 @@ from .helpers import (
 from .logger import setup_logging
 
 __all__ = [
+    "_merge_team_data",
     "clean_text",
     "convert_types",
     "fetch_page_html",
     "get_random_header",
     "setup_logging",
     "split_made_attempted",
-    "get_sport_identifier",
     "normalize_gender_arg",
     "validate_season_option",
 ]

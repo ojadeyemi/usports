@@ -19,7 +19,7 @@ poetry add git+https://github.com/ojadeyemi/usports.git
 | Sport        | Status         | League      |
 | ------------ | -------------- | ----------- |
 | Basketball   | ✅ Available   | Men & Women |
-| Football     | 🔄 In Progress | Men         |
+| Football     | ✅ Available | Men         |
 | Volleyball   | 🔄 In Progress | Men & Women |
 | Ice Hockey   | 🔄 In Progress | Men & Women |
 | Soccer       | 🔄 In Progress | Men & Women |
@@ -28,19 +28,19 @@ poetry add git+https://github.com/ojadeyemi/usports.git
 ## Usage
 
 ```python
-from usports.basketball import usport_players_stats, usport_team_stats
+from usports.basketball import usport_bball_players_stats, usport_bball_team_stats
 
 # Men's player stats
-men_player_stats = usport_players_stats('m')
+men_player_stats = usport_bball_players_stats('m')
 
 # Women's player stats for the U Sports Championship Final 8
-women_championship_stats = usport_players_stats('w', 'championship')
+women_championship_stats = usport_bball_players_stats('w', 'championship')
 
 # Men's team stats
-men_team_stats = usport_team_stats('m')
+men_team_stats = usport_bball_team_stats('m')
 
 # Women's team stats for playoffs
-women_playoffs_stats = usport_team_stats('w', 'playoffs')
+women_playoffs_stats = usport_bball_team_stats('w', 'playoffs')
 ```
 
 Both functions return **pandas DataFrames** with the requested statistics.
