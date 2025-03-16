@@ -21,6 +21,7 @@ from usports.utils.constants import (
     PLAYER_SEASON_TOTALS_STATS_START_INDEX,
     SEASON_URLS,
 )
+from usports.utils.types import SeasonType
 
 from .constants import PLAYER_SORT_CATEGORIES, PLAYER_STATS_COLUMNS_TYPE_MAPPING
 
@@ -166,7 +167,7 @@ async def _fetch_and_merge_player_stats(urls: list[str]) -> pd.DataFrame:
 
 def usport_bball_players_stats(
     league: Literal["m", "men", "w", "women"],
-    season_option: Literal["regular", "playoffs", "championship"] = "regular",
+    season_option: SeasonType = "regular",
 ) -> pd.DataFrame:
     """
     Fetch and process player statistics data from the USports website.

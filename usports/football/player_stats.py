@@ -4,13 +4,13 @@ from typing import Any
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
 from constants import FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING, PLAYER_SORT_CATEGORIES  # noqa: F401
+from pandas.errors import EmptyDataError
 
 from usports.utils import (
     clean_text,
     convert_types,
     fetch_page_html,
     setup_logging,
-    split_made_attempted,
     validate_season_option,
 )
 from usports.utils.constants import (
@@ -19,6 +19,7 @@ from usports.utils.constants import (
     FOOTBALL_PLAYER_STATS_OFFSET,  # noqa: F401
     SEASON_URLS,
 )
+from usports.utils.types import SeasonType
 
 logger = setup_logging()
 
@@ -47,7 +48,6 @@ def _parse_player_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[d
             table_data.append(row_data)
 
     return table_data
-
 
 
 def _merge_player_data(existing_data: list[dict[str, Any]], new_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -136,4 +136,33 @@ def _construct_player_urls(season_option: str) -> list[str]:
     return urls
 
 
+async def _fetch_and_merge_player_stats(urls: list[str]) -> pd.DataFrame:
+    all_df: list[pd.DataFrame] = []
+    tasks = [_get_players_stats_df(url) for url in urls]
+    results = await asyncio.gather(*tasks)
+    all_df.extend(results)
 
+    if not all_df:
+        raise EmptyDataError("No player stats data found.")
+
+    # Remove rows that are all NA from each DataFrame
+    cleaned_dfs = [df.dropna(how="all") for df in all_df]
+
+    merged_df = pd.concat(cleaned_dfs, ignore_index=True).drop_duplicates().reset_index(drop=True)
+    return merged_df
+
+
+def usports_football_players_stats(season_option: SeasonType = "regular") -> pd.DataFrame:
+    """
+    Get football player stats for a given season.
+
+    Args:
+        season_option: Season type ('regular' or 'playoff')
+
+    Returns:
+        pd.DataFrame: DataFrame containing player stats
+    """
+    season_option = season_option.lower()  # type: ignore
+    urls = _construct_player_urls(season_option)
+    df = asyncio.run(_fetch_and_merge_player_stats(urls))
+    return df
