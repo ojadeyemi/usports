@@ -159,13 +159,13 @@ async def _fetch_and_merge_player_stats(urls: list[str]) -> pd.DataFrame:
         raise EmptyDataError("No player stats data found.")
 
     # Remove rows that are all NA from each DataFrame
-    cleaned_dfs = [df.dropna(how="all") for df in all_df]
+    cleaned_dfs = [df.dropna(how="all", axis=0).dropna(how="all", axis=1) for df in all_df]
 
     merged_df = pd.concat(cleaned_dfs, ignore_index=True).drop_duplicates().reset_index(drop=True)
     return merged_df
 
 
-def usport_bball_players_stats(
+def usports_bball_players_stats(
     league: Literal["m", "men", "w", "women"],
     season_option: SeasonType = "regular",
 ) -> pd.DataFrame:

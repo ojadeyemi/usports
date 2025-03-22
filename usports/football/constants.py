@@ -130,6 +130,7 @@ STANDINGS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
 FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     # Passing stats
     {
+        "games_played": int,  # gp
         "pass_completions": int,  # comp
         "pass_attempts": int,  # att
         "completion_percentage": float,  # pct
@@ -143,6 +144,7 @@ FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     },
     # Rushing stats
     {
+        "games_played": int,  # gp
         "rushing_attempts": int,  # rush
         "rushing_yards": int,  # yds
         "rushing_yards_per_game": float,  # y/g
@@ -154,6 +156,7 @@ FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     },
     # Receiving stats
     {
+        "games_played": int,  # gp
         "receptions": int,  # rec
         "receptions_per_game": float,  # rec/g
         "receiving_yards": int,  # yds
@@ -164,6 +167,7 @@ FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     },
     # Kicking stats
     {
+        "games_played": int,  # gp
         "field_goals_made": int,  # fgm
         "field_goals_attempted": int,  # fga
         "field_goal_percentage": float,  # pct
@@ -175,6 +179,7 @@ FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     },
     # Punting stats
     {
+        "games_played": int,  # gp
         "punts": int,  # punt
         "punting_yards": int,  # yds
         "yards_per_punt": float,  # avg
@@ -199,12 +204,13 @@ FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     },
     # All-Purpose yards stats
     {
-        "all_purpose_rushing_yards": int,  # rush
-        "all_purpose_receiving_yards": int,  # rcv
-        "all_purpose_punt_return_yards": int,  # pr
-        "all_purpose_kick_return_yards": int,  # kr
-        "all_purpose_total_yards": int,  # yds
-        "all_purpose_yards_per_game": float,  # ypg
+        "games_played": int,  # gp
+        "rushing_yards": int,  # rush
+        "receiving_yards": int,  # rcv
+        "punt_return_yards": int,  # pr
+        "kick_return_yards": int,  # kr
+        "total_yards": int,  # yds
+        "yards_per_game": float,  # ypg
     },
     # Scoring stats
     {
@@ -223,6 +229,7 @@ FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     },
     # Defensive stats
     {
+        "games_played": int,  # gp
         "solo_tackles": int,  # tkl
         "assisted_tackles": int,  # ast
         "total_tackles": float,  # tot (some leagues count half tackles)
@@ -243,7 +250,23 @@ FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
 
 PLAYER_SORT_CATEGORIES = [
     ("qb", "pyd"),
+    ("qb", "ptd"),
     ("rb", "ryd"),
+    ("rb", "rtd"),
     ("wr", "wyd"),
-    ("k", "fglg"),
+    ("wr", "wtd"),
+    ("k", "fga"),
+    ("k", "kpts"),
+    ("p", "uyd"),
+    ("p", "uya"),
+    ("kr", "kryd"),
+    ("all", "apyds"),
+    ("pts", "pts"),
+    ("d", "dtt"),
+    ("d", "dst"),
+    ("d", "tfl"),
+    ("d", "dff"),
+    ("d", "dfr"),
+    ("d", "di"),
+    ("d", "dblk"),
 ]

@@ -1,7 +1,7 @@
 [project]
 name = "usports"
 version = "0.1.0"
-description = "A python package for current U Sports stats"
+description = "A python package for current USPORTS stats"
 authors = [{ name = "OJ Adeyemi", email = "ojieadeyemi@gmail.com" }]
 readme = "README.md"
 license = { text = "MIT" }
@@ -37,7 +37,7 @@ classifiers = [
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.4"
-pylint = "^3.3.4"
+pylint = "^3.3.6"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

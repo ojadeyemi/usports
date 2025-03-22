@@ -2,15 +2,16 @@
 
 from pandas import DataFrame
 
-from usports.basketball import usport_bball_players_stats
+from usports.basketball import usports_bball_players_stats
+from usports.football import usports_football_players_stats
 
-from .test_data import expected_basketball_players_df_columns
+from .test_data import expected_basketball_players_df_columns, expected_football_players_df_column
 
 
 def test_usports_bball_player_stats():
-    """Test if usport_players_stats function returns a non-empty pandas DataFrame."""
+    """Test if usports_players_stats function returns a non-empty pandas DataFrame."""
 
-    player_stats_df = usport_bball_players_stats("women")
+    player_stats_df = usports_bball_players_stats("women")
 
     assert isinstance(player_stats_df, DataFrame), "Player statistics should be a pandas DataFrame"
     assert not player_stats_df.empty, "Player statistics DataFrame is empty"
@@ -21,13 +22,23 @@ def test_usports_bball_player_stats():
 
 
 def test_usports_bball_playoffs_player_stats():
-    """Test if usport_players_stats function returns a non-empty pandas DataFrame."""
+    """Test if usports_players_stats function returns a non-empty pandas DataFrame."""
 
-    player_stats_df = usport_bball_players_stats("men", "playoffs")
+    player_stats_df = usports_bball_players_stats("men", "playoffs")
 
     assert isinstance(player_stats_df, DataFrame), "Player statistics should be a pandas DataFrame"
     assert not player_stats_df.empty, "Player statistics DataFrame is empty"
 
     actual_columns = player_stats_df.columns.tolist()
     for column in expected_basketball_players_df_columns:
-        assert column in actual_columns, f"Expected column '{column}' not found in player_stats_df"
+        assert column in actual_columns, f"Expected column '{column}' not found in basketball player_stats_df"
+
+
+def test_usports_football_player_stats():
+    player_stats_df = usports_football_players_stats("regular")
+    assert isinstance(player_stats_df, DataFrame), "Player statistics should be a pandas DataFrame"
+    assert not player_stats_df.empty, "Player statistics DataFrame is empty"
+
+    actual_columns = player_stats_df.columns.tolist()
+    for column in expected_football_players_df_column:
+        assert column in actual_columns, f"Expected column '{column}' not found in football player_stats_df"

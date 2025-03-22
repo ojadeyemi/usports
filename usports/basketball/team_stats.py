@@ -4,7 +4,6 @@ from typing import Any, Literal
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
 
-from usports.basketball.player_stats import _get_sport_identifier
 from usports.utils import (
     _merge_team_data,
     clean_text,
@@ -19,6 +18,7 @@ from usports.utils.constants import BASE_URL, BS4_PARSER, SEASON_URLS, TEAM_CONF
 from usports.utils.types import SeasonType
 
 from .constants import STANDINGS_COLUMNS_TYPE_MAPPING, TEAM_STATS_COLUMNS_TYPE_MAPPING
+from .player_stats import _get_sport_identifier
 
 logger = setup_logging()
 
@@ -227,7 +227,7 @@ async def _combine_data(gender: str, season_option: str) -> pd.DataFrame:
     return combined_df
 
 
-def usport_bball_team_stats(
+def usports_bball_team_stats(
     league: Literal["m", "men", "w", "women"],
     season_option: SeasonType = "regular",
 ) -> pd.DataFrame:

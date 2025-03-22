@@ -3,7 +3,6 @@ from typing import Any
 
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
-from constants import FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING, PLAYER_SORT_CATEGORIES  # noqa: F401
 from pandas.errors import EmptyDataError
 
 from usports.utils import (
@@ -21,6 +20,8 @@ from usports.utils.constants import (
 )
 from usports.utils.types import SeasonType
 
+from .constants import FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING, PLAYER_SORT_CATEGORIES  # noqa: F401
+
 logger = setup_logging()
 
 
@@ -35,7 +36,6 @@ def _parse_player_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[d
             row_data = {
                 "player_name": clean_text(cols[1].get_text()),
                 "school": clean_text(cols[2].get_text()),
-                "games_played": clean_text(cols[3].get_text()) if clean_text(cols[3].get_text()) != "-" else "0",
             }
 
             for i, col_name in enumerate(columns):
@@ -44,7 +44,6 @@ def _parse_player_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[d
                     value = clean_text(cols[col_index].get_text())
                     row_data[col_name] = value
 
-            print(f"Parsed row: {row_data}")
             table_data.append(row_data)
 
     return table_data
@@ -54,7 +53,7 @@ def _merge_player_data(existing_data: list[dict[str, Any]], new_data: list[dict[
     """Merge existing and new player data by (name, school, games_played)."""
 
     def key_func(d: dict[str, Any]) -> str:
-        return f"{d['player_name']}_{d['school']}_{d['games_played']}"
+        return f"{d['player_name']}_{d['school']}"
 
     data_dict = {key_func(item): item for item in existing_data}
 
@@ -79,8 +78,6 @@ async def _fetching_player_stats(url: str) -> list[dict[str, Any]]:
             soup = BeautifulSoup(tables_html[i], BS4_PARSER)
             table_data = _parse_player_stats_table(soup, columns=list(column_mapping.keys()))
             all_data = _merge_player_data(all_data, table_data)
-
-        print(all_data[0])
 
         return all_data
 
@@ -146,7 +143,7 @@ async def _fetch_and_merge_player_stats(urls: list[str]) -> pd.DataFrame:
         raise EmptyDataError("No player stats data found.")
 
     # Remove rows that are all NA from each DataFrame
-    cleaned_dfs = [df.dropna(how="all") for df in all_df]
+    cleaned_dfs = [df.dropna(how="all", axis=0).dropna(how="all", axis=1) for df in all_df]
 
     merged_df = pd.concat(cleaned_dfs, ignore_index=True).drop_duplicates().reset_index(drop=True)
     return merged_df
