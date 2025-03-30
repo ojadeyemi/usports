@@ -1,4 +1,4 @@
-"""Contains mappings and configurations for team statistics, player statistics, conferences, and standings."""
+"""Contains basketball related constants"""
 
 TEAM_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     {
@@ -64,18 +64,6 @@ STANDINGS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
     "total_points": int,
     "total_points_against": int,
 }
-
-STATS_GROUP_OPTIONS = {
-    "Offense Shooting": "#sh-0",
-    "Off Rebounding": "#rb-0",
-    "Off Ball Control": "#bc-0",
-    "Off Efficiency": "#eff-0",
-    "Defense Shooting": "#dsh-0",
-    "Def Rebounding": "#drb-0",
-    "Defense Ball Control": "#dbc-0",
-    "Def Efficiency": "#deff-0",
-}
-
 
 PLAYER_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     {

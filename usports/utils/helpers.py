@@ -1,8 +1,9 @@
 import re
 import unicodedata
-from typing import Literal
+from typing import Any, Literal
 
 import httpx
+import pandas as pd
 from bs4 import BeautifulSoup
 from pandas import DataFrame
 
@@ -30,11 +31,16 @@ async def fetch_page_html(url: str) -> list[str]:
 
 
 def split_made_attempted(value: str) -> tuple[int, int]:
-    """Split shots into made and attempted (e.g., '12-20' to 12 and 20)."""
-    try:
-        made, attempted = value.split("-")
-        return int(made), int(attempted)
+    """
+    Split a string of the form 'made-attempted' into a tuple of two integers.
+    Handles cases where multiple dashes appear (e.g., '1--31' is normalized to '1-31').
+    """
 
+    # Normalize the value by replacing multiple dashes with a single dash.
+    normalized_value = re.sub(r"-+", "-", value)
+    try:
+        made, attempted = normalized_value.split("-")
+        return int(made), int(attempted)
     except ValueError as e:
         raise ValueError(f"Error splitting made and attempted values from '{value}': {e}") from e
 
@@ -55,12 +61,16 @@ def clean_text(text: str) -> str:
 
 
 def convert_types(df: DataFrame, type_mapping: dict[str, type]) -> DataFrame:
-    """Convert DataFrame columns to specified types."""
+    """Convert DataFrame columns to specified types, handling missing values correctly."""
     for column, dtype in type_mapping.items():
-        if dtype in [int, float]:
-            df[column] = df[column].astype(str).replace("-", "0")
+        if column in df.columns:
+            if dtype in [int, float]:
+                df[column] = df[column].astype(str).replace(["-", "nan", ""], "0")
 
-        df[column] = df[column].astype(dtype)
+                # Convert to numeric type, forcing errors to NaN before casting
+                df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0)
+
+            df[column] = df[column].astype(dtype)
 
     return df
 
@@ -86,3 +96,22 @@ def validate_season_option(season_option: str, available_options: dict) -> str:
         raise ValueError(f"Invalid season_option: {season_option}. Must be one of {options}")
 
     return available_options[season_option_lower]
+
+
+def _merge_team_data(existing_data: list[dict[str, Any]], new_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Merge existing and new team data stats"""
+
+    def key_func(d: dict[str, Any]) -> str:
+        return f"{d['team_name']}"
+
+    data_dict = {key_func(item): item for item in existing_data}
+
+    for new_item in new_data:
+        key = key_func(new_item)
+
+        if key in data_dict:
+            data_dict[key].update(new_item)
+        else:
+            data_dict[key] = new_item
+
+    return list(data_dict.values())

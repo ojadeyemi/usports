@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, Literal
+from typing import Any
 
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
@@ -9,61 +9,40 @@ from usports.utils import (
     clean_text,
     convert_types,
     fetch_page_html,
-    normalize_gender_arg,
     setup_logging,
-    split_made_attempted,
     validate_season_option,
 )
 from usports.utils.constants import (
     BASE_URL,
-    BASKETBALL_PLAYER_STATS_OFFSET,
     BS4_PARSER,
-    PLAYER_SEASON_TOTALS_STATS_START_INDEX,
+    FOOTBALL_PLAYER_STATS_OFFSET,  # noqa: F401
     SEASON_URLS,
 )
 from usports.utils.types import SeasonType
 
-from .constants import PLAYER_SORT_CATEGORIES, PLAYER_STATS_COLUMNS_TYPE_MAPPING
+from .constants import FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING, PLAYER_SORT_CATEGORIES  # noqa: F401
 
 logger = setup_logging()
 
 
-def _get_sport_identifier(gender: str) -> str:
-    """Get the sport identifier based on gender."""
-    if gender == "men":
-        return "mbkb"
-
-    if gender == "women":
-        return "wbkb"
-
-    raise ValueError("Argument must be 'men' or 'women'")
-
-
 def _parse_player_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
-    """Parse player stats data from an HTML table."""
+    """Parse player stats data from an HTML table for football."""
     table_data: list[dict[str, Any]] = []
     rows: list[Tag] = soup.find_all("tr")  # type: ignore
 
     for row in rows:
         cols: list[Tag] = row.find_all("td")  # type: ignore
         if len(cols) > 1:
-            row_data = {}
-            row_data["player_name"] = clean_text(cols[1].get_text())
-            row_data["school"] = clean_text(cols[2].get_text())
-            row_data["games_played"] = clean_text(cols[3].get_text())
-            row_data["games_started"] = clean_text(cols[4].get_text())
+            row_data = {
+                "player_name": clean_text(cols[1].get_text()),
+                "school": clean_text(cols[2].get_text()),
+            }
 
-            # Parse the rest of the columns
             for i, col_name in enumerate(columns):
-                if i + BASKETBALL_PLAYER_STATS_OFFSET < len(cols):
-                    value = clean_text(cols[i + BASKETBALL_PLAYER_STATS_OFFSET].get_text())
-
-                    if col_name.endswith("_made"):
-                        made, attempted = split_made_attempted(value)
-                        row_data[col_name] = made
-                        row_data[col_name.replace("made", "attempted")] = attempted
-                    else:
-                        row_data[col_name] = value
+                col_index = i + FOOTBALL_PLAYER_STATS_OFFSET
+                if col_index < len(cols):
+                    value = clean_text(cols[col_index].get_text())
+                    row_data[col_name] = value
 
             table_data.append(row_data)
 
@@ -74,7 +53,7 @@ def _merge_player_data(existing_data: list[dict[str, Any]], new_data: list[dict[
     """Merge existing and new player data by (name, school, games_played)."""
 
     def key_func(d: dict[str, Any]) -> str:
-        return f"{d['player_name']}_{d['school']}_{d['games_played']}"
+        return f"{d['player_name']}_{d['school']}"
 
     data_dict = {key_func(item): item for item in existing_data}
 
@@ -90,12 +69,13 @@ def _merge_player_data(existing_data: list[dict[str, Any]], new_data: list[dict[
 
 
 async def _fetching_player_stats(url: str) -> list[dict[str, Any]]:
+    """Fetch and parse football player stats from a URL."""
     try:
         tables_html = await fetch_page_html(url)
 
         all_data = []
-        for i, column_mapping in enumerate(PLAYER_STATS_COLUMNS_TYPE_MAPPING):
-            soup = BeautifulSoup(tables_html[i + PLAYER_SEASON_TOTALS_STATS_START_INDEX], BS4_PARSER)
+        for i, column_mapping in enumerate(FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING):
+            soup = BeautifulSoup(tables_html[i], BS4_PARSER)
             table_data = _parse_player_stats_table(soup, columns=list(column_mapping.keys()))
             all_data = _merge_player_data(all_data, table_data)
 
@@ -109,18 +89,18 @@ async def _fetching_player_stats(url: str) -> list[dict[str, Any]]:
 # DataFrame Assembly
 # -------------------------------------------------------------------
 async def _get_players_stats_df(stats_url: str) -> pd.DataFrame:
-    """Fetch player stats from a page and return a cleaned DataFrame."""
-    logger.debug(f"Fetching player stats on category: {stats_url[-5:]}")
+    """Fetch football player stats from a page and return a cleaned DataFrame."""
+    logger.debug(f"Fetching football player stats from: {stats_url[-5:]}")
 
     player_stats = await _fetching_player_stats(stats_url)
 
+    # Define type mappings for football stats
     combined_type_mapping = {
         "player_name": str,
         "school": str,
         "games_played": int,
-        "games_started": int,
     }
-    for mapping in PLAYER_STATS_COLUMNS_TYPE_MAPPING:
+    for mapping in FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING:
         combined_type_mapping.update(mapping)
 
     df = pd.DataFrame(player_stats)
@@ -139,12 +119,16 @@ async def _get_players_stats_df(stats_url: str) -> pd.DataFrame:
     return df
 
 
-def _construct_player_urls(gender: str, season_option: str) -> list[str]:
-    sport = _get_sport_identifier(gender)
+def _construct_player_urls(season_option: str) -> list[str]:
+    """Construct URLs for fetching football player stats."""
     season = validate_season_option(season_option, SEASON_URLS)
-    player_stats_url_template = f"{BASE_URL}/{sport}/{season}/players?pos=sh&r=0&sort={{sort_category}}"
+    sport = "fball"
+    player_stats_url_template = f"{BASE_URL}/{sport}/{season}/players?pos={{sort_position}}&sort={{sort_category}}"
 
-    urls = [player_stats_url_template.format(sort_category=category) for category in PLAYER_SORT_CATEGORIES]
+    urls = [
+        player_stats_url_template.format(sort_position=position, sort_category=category)
+        for position, category in PLAYER_SORT_CATEGORIES
+    ]
 
     return urls
 
@@ -165,30 +149,17 @@ async def _fetch_and_merge_player_stats(urls: list[str]) -> pd.DataFrame:
     return merged_df
 
 
-def usports_bball_players(
-    league: Literal["m", "men", "w", "women"],
-    season_option: SeasonType = "regular",
-) -> pd.DataFrame:
+def usports_fball_players(season_option: SeasonType = "regular") -> pd.DataFrame:
     """
-    Fetch and process player statistics data from the USports website.
+    Get football player stats for a given season.
 
     Args:
-        league (str): Gender of the players. Accepts 'men', 'women', 'm', or 'w' (case insensitive).
-        season_option (str): The season option to fetch data for. Options are:
-            - 'regular': Regular season statistics (default).
-            - 'playoffs': Playoff season statistics.
-            - 'championship': Championship season statistics.
+        season_option: Season type ('regular' or 'playoff')
 
     Returns:
-        DataFrame: DataFrame containing processed player statistics.
+        pd.DataFrame: DataFrame containing player stats
     """
-
-    gender = normalize_gender_arg(league)
     season_option = season_option.lower()  # type: ignore
-
-    urls = _construct_player_urls(gender, season_option)
-
-    # Actually fetch the DataFrame
+    urls = _construct_player_urls(season_option)
     df = asyncio.run(_fetch_and_merge_player_stats(urls))
-
     return df
