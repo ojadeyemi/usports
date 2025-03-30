@@ -260,7 +260,7 @@ async def _combine_data(season_option: str) -> pd.DataFrame:
     return combined_df
 
 
-def usports_football_team_stats(season_option: SeasonType = "regular") -> pd.DataFrame:
+def usports_fball_teams(season_option: SeasonType = "regular") -> pd.DataFrame:
     """
     Retrieve U Sports men football team stats.
 

@@ -227,7 +227,7 @@ async def _combine_data(gender: str, season_option: str) -> pd.DataFrame:
     return combined_df
 
 
-def usports_bball_team_stats(
+def usports_bball_teams(
     league: Literal["m", "men", "w", "women"],
     season_option: SeasonType = "regular",
 ) -> pd.DataFrame:

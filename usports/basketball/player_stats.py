@@ -165,7 +165,7 @@ async def _fetch_and_merge_player_stats(urls: list[str]) -> pd.DataFrame:
     return merged_df
 
 
-def usports_bball_players_stats(
+def usports_bball_players(
     league: Literal["m", "men", "w", "women"],
     season_option: SeasonType = "regular",
 ) -> pd.DataFrame:
