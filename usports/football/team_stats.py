@@ -13,7 +13,8 @@ from usports.utils import (
     split_made_attempted,
     validate_season_option,
 )
-from usports.utils.constants import BASE_URL, BS4_PARSER, SEASON_URLS, TEAM_CONFERENCES
+from usports.utils.constants import BASE_URL, BS4_PARSER, FOOTBALL, SEASON_URLS
+from usports.utils.helpers import get_conference_mapping_for_league
 from usports.utils.types import SeasonType
 
 from .constants import FBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING, STANDINGS_COLUMNS_TYPE_MAPPING
@@ -232,11 +233,12 @@ async def _combine_data(season_option: str) -> pd.DataFrame:
         raise ValueError(f"Invalid season_option: {season_option}. Must be one of {', '.join(SEASON_URLS.keys())}")
 
     team_stats_url, standings_url = _construct_team_url(season_option)
+    conference_map = get_conference_mapping_for_league(FOOTBALL)
 
     if season_option in ["playoffs", "championship"]:
         logger.debug(f"FETCHING FBALL {season_option.upper()} SEASON STATISTICS")
         team_stats_df = await _get_team_stats_df(team_stats_url)
-        team_stats_df["conference"] = team_stats_df["team_name"].map(TEAM_CONFERENCES).astype(str)
+        team_stats_df["conference"] = team_stats_df["team_name"].map(conference_map).astype(str)
         return team_stats_df
 
     logger.debug(f"FETCHING FBALL {season_option.upper()} SEASON STANDINGS")
@@ -256,7 +258,7 @@ async def _combine_data(season_option: str) -> pd.DataFrame:
             combined_df["games_played_team_stats"]
         )
         combined_df = combined_df.drop(columns=["games_played_standings", "games_played_team_stats"])
-        combined_df["conference"] = combined_df["team_name"].map(TEAM_CONFERENCES).astype(str)
+        combined_df["conference"] = combined_df["team_name"].map(conference_map).astype(str)
     return combined_df
 
 

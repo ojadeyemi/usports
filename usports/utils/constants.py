@@ -16,6 +16,12 @@ RSEQ = "RSEQ"
 CW = "CW"
 AUS = "AUS"
 
+BASKETBALL = "basketball"
+FOOTBALL = "football"
+ICE_HOCKEY = "ice_hockey"
+SOCCER = "soccer"
+VOLLEYBALL = "volleyball"
+
 
 # Base URL for the U Sports website
 BASE_URL = "https://universitysport.prestosports.com/sports"
@@ -26,7 +32,7 @@ PLAYER_SEASON_TOTALS_STATS_START_INDEX = 3
 BASKETBALL_PLAYER_STATS_OFFSET = 5
 FOOTBALL_PLAYER_STATS_OFFSET = 3
 
-TEAM_CONFERENCES = {
+DEFAULT_SCHOOL_CONFERENCES = {
     "Acadia": AUS,
     "Alberta": CW,
     "Algoma": OUA,
@@ -49,7 +55,9 @@ TEAM_CONFERENCES = {
     "McGill": RSEQ,
     "McMaster": OUA,
     "Memorial": AUS,
+    "Moncton": AUS,
     "Montreal": RSEQ,
+    "Mount Allison": AUS,
     "Mount Royal": CW,
     "Nipissing": OUA,
     "Ontario Tech": OUA,
@@ -73,10 +81,20 @@ TEAM_CONFERENCES = {
     "UNBC": CW,
     "UPEI": AUS,
     "UQAM": RSEQ,
+    "UQTR": RSEQ,
     "Victoria": CW,
     "Waterloo": OUA,
     "Western": OUA,
     "Windsor": OUA,
     "Winnipeg": CW,
     "York": OUA,
+}
+
+LEAGUE_CONFERENCE_OVERRIDES = {
+    ICE_HOCKEY: {
+        "McGill": OUA,  # McGill is normally RSEQ, but in hockey they're OUA
+        "UQTR": OUA,
+    },
+    FOOTBALL: {},
+    # other leagues can be added as needed
 }

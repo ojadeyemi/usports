@@ -4,6 +4,14 @@ ConferenceType = Literal["OUA", "RSEQ", "CW", "AUS"]
 
 SeasonType = Literal["regular", "playoffs", "championship"]
 
+LeagueType = Literal[
+    "basketball",
+    "football",
+    "ice_hockey",
+    "soccer",
+    "volleyball",
+]
+
 # Usport teams
 TeamName = Literal[
     "Acadia",

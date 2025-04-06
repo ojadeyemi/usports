@@ -14,7 +14,8 @@ from usports.utils import (
     split_made_attempted,
     validate_season_option,
 )
-from usports.utils.constants import BASE_URL, BS4_PARSER, SEASON_URLS, TEAM_CONFERENCES
+from usports.utils.constants import BASE_URL, BASKETBALL, BS4_PARSER, SEASON_URLS
+from usports.utils.helpers import get_conference_mapping_for_league
 from usports.utils.types import SeasonType
 
 from .constants import STANDINGS_COLUMNS_TYPE_MAPPING, TEAM_STATS_COLUMNS_TYPE_MAPPING
@@ -185,6 +186,7 @@ async def _combine_data(gender: str, season_option: str) -> pd.DataFrame:
         raise ValueError(f"Invalid season_option: {season_option}. Must be one of {', '.join(SEASON_URLS.keys())}")
 
     team_stats_url, standings_url = _construct_team_urls(gender, season_option)
+    conference_map = get_conference_mapping_for_league(BASKETBALL)
 
     # For playoffs and championship, only fetch team stats
     if season_option in ["playoffs", "championship"]:
@@ -192,7 +194,7 @@ async def _combine_data(gender: str, season_option: str) -> pd.DataFrame:
         team_stats_df = await _get_team_stats_df(team_stats_url)
 
         # Add conference mapping directly to team stats
-        team_stats_df["conference"] = team_stats_df["team_name"].map(TEAM_CONFERENCES).astype(str)
+        team_stats_df["conference"] = team_stats_df["team_name"].map(conference_map).astype(str)
 
         return team_stats_df
 
@@ -222,7 +224,7 @@ async def _combine_data(gender: str, season_option: str) -> pd.DataFrame:
         combined_df = combined_df.drop(columns=["games_played_standings", "games_played_team_stats"])
 
         # Add conference mapping
-        combined_df["conference"] = combined_df["team_name"].map(TEAM_CONFERENCES).astype(str)
+        combined_df["conference"] = combined_df["team_name"].map(conference_map).astype(str)
 
     return combined_df
 
