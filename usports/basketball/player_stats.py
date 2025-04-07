@@ -28,12 +28,12 @@ from .constants import PLAYER_SORT_CATEGORIES, PLAYER_STATS_COLUMNS_TYPE_MAPPING
 logger = setup_logging()
 
 
-def _get_sport_identifier(gender: str) -> str:
-    """Get the sport identifier based on gender."""
-    if gender == "men":
+def _get_sport_identifier(league: str) -> str:
+    """Get the sport identifier based on league."""
+    if league == "men":
         return "mbkb"
 
-    if gender == "women":
+    if league == "women":
         return "wbkb"
 
     raise ValueError("Argument must be 'men' or 'women'")
@@ -170,7 +170,7 @@ def usports_bball_players(
     season_option: SeasonType = "regular",
 ) -> pd.DataFrame:
     """
-    Fetch and process player statistics data from the USports website.
+    Fetch and process bsaketball player statistics data from the USports website.
 
     Args:
         league (str): Gender of the players. Accepts 'men', 'women', 'm', or 'w' (case insensitive).
@@ -188,7 +188,6 @@ def usports_bball_players(
 
     urls = _construct_player_urls(gender, season_option)
 
-    # Actually fetch the DataFrame
     df = asyncio.run(_fetch_and_merge_player_stats(urls))
 
     return df

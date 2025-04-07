@@ -9,9 +9,9 @@ def setup_logging():
     log_level = os.getenv("LOG_LEVEL", "INFO")  # Default to INFO if LOG_LEVEL is not set
 
     if log_level == "DEBUG":
-        log_format = "%(asctime)s - %(name)s - %(levelname)s - %(filename)s - %(message)s"
+        log_format = "%(asctime)s -  %(levelname)s - %(filename)s - %(message)s"
     else:
-        log_format = "%(message)s"
+        log_format = "%(asctime)s - %(message)s"
 
     logging.basicConfig(
         level=log_level,
