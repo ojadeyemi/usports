@@ -3,12 +3,6 @@ from typing import Any, Literal
 
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
-from constants import (
-    GOALIES_SORT_CATEGORIES,
-    ICE_HOCKEY_GOALIE_STATS_COLUMNS_TYPE_MAPPING,
-    ICE_HOCKEY_PLAYER_STATS_COLUMNS_TYPE_MAPPING,
-    SKATERS_SORT_CATEGORIES,
-)
 from pandas.errors import EmptyDataError
 
 from usports.utils import (
@@ -20,6 +14,13 @@ from usports.utils import (
 from usports.utils.constants import BASE_URL, BS4_PARSER, PLAYER_SEASON_TOTALS_STATS_START_INDEX, SEASON_URLS
 from usports.utils.helpers import normalize_gender_arg, validate_season_option
 from usports.utils.types import SeasonType
+
+from .constants import (
+    GOALIES_SORT_CATEGORIES,
+    ICE_HOCKEY_GOALIE_STATS_COLUMNS_TYPE_MAPPING,
+    ICE_HOCKEY_PLAYER_STATS_COLUMNS_TYPE_MAPPING,
+    SKATERS_SORT_CATEGORIES,
+)
 
 logger = setup_logging()
 

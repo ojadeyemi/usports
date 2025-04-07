@@ -118,6 +118,7 @@ def _merge_team_data(existing_data: list[dict[str, Any]], new_data: list[dict[st
 
 
 def get_conference_mapping_for_league(league: str) -> dict[str, str]:
+    """Maps team name (school) to conference where school plays for specific league"""
     mapping = DEFAULT_SCHOOL_CONFERENCES.copy()
     overrides = LEAGUE_CONFERENCE_OVERRIDES.get(league, {})
     mapping.update(overrides)
