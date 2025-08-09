@@ -7,19 +7,13 @@ class USportsError(Exception):
     pass
 
 
-class NoStandingsError(USportsError):
-    """Raised when standings requested for playoffs/championship."""
-
-    pass
-
-
-class InvalidLeagueError(USportsError):
-    """Raised when invalid league specified."""
-
-    pass
-
-
 class DataFetchError(USportsError):
     """Raised when data fetching fails."""
+
+    pass
+
+
+class ParsingError(USportsError):
+    """Raised when data parsing fails."""
 
     pass

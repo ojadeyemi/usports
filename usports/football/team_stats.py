@@ -7,6 +7,7 @@ import pandas as pd
 from bs4 import BeautifulSoup, Tag
 
 from ..base.constants import BASE_URL, BS4_PARSER, SEASON_URLS, TEAM_CONFERENCES
+from ..base.exceptions import DataFetchError
 from ..base.types import SeasonType
 from ..utils import (
     _merge_team_data,
@@ -119,8 +120,8 @@ async def _fetching_team_stats(url: str) -> list[dict[str, Any]]:
             all_data = _merge_team_data(all_data, table_data)
 
         return all_data
-    except Exception as e:
-        raise RuntimeError(f"Error fetching football team_stats: {e}") from e
+    except Exception as e:  # Catch specific exceptions if possible
+        raise DataFetchError(f"Error fetching football team_stats: {e}") from e
 
 
 # -------------------------------------------------------------------

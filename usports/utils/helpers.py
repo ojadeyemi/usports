@@ -7,6 +7,8 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from pandas import DataFrame
 
+from usports.base.exceptions import DataFetchError, ParsingError
+
 from .constants import BS4_PARSER, TIMEOUT
 from .headers import get_random_header
 
@@ -25,7 +27,7 @@ async def fetch_page_html(url: str) -> list[str]:
     tables = soup.find_all("table")
 
     if not tables:
-        raise ValueError(f"No <table> elements found at {url}")
+        raise DataFetchError(f"No <table> elements found at {url}")
 
     return [str(table).replace("\n", "").replace("\t", "") for table in tables]
 
@@ -41,8 +43,8 @@ def split_made_attempted(value: str) -> tuple[int, int]:
     try:
         made, attempted = normalized_value.split("-")
         return int(made), int(attempted)
-    except ValueError as e:
-        raise ValueError(f"Error splitting made and attempted values from '{value}': {e}") from e
+    except (ValueError, TypeError) as e:
+        raise ParsingError(f"Error splitting made and attempted values from '{value}': {e}") from e
 
 
 def clean_text(text: str) -> str:

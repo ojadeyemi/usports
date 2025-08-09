@@ -6,6 +6,7 @@ from typing import Any
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
 
+from usports.base.exceptions import DataFetchError
 from usports.base.types import LeagueType, SeasonType
 from usports.utils import (
     _merge_team_data,
@@ -74,8 +75,8 @@ async def _fetching_team_stats(url: str) -> list[dict[str, Any]]:
 
         return all_data
 
-    except Exception as e:
-        raise RuntimeError(f"Error fetching basketball team_stats: {e}") from e
+    except Exception as e:  # Catch specific exceptions if possible
+        raise DataFetchError(f"Error fetching basketball team_stats: {e}") from e
 
 
 # -------------------------------------------------------------------

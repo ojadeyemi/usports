@@ -7,6 +7,7 @@ import pandas as pd
 from bs4 import BeautifulSoup, Tag
 
 from ..base.constants import BASE_URL, BS4_PARSER, SEASON, TEAM_CONFERENCES
+from ..base.exceptions import DataFetchError
 from ..utils import (
     clean_text,
     convert_types,
@@ -64,7 +65,7 @@ async def _fetching_standings(url: str) -> list[dict[str, Any]]:
         return all_data
 
     except Exception as e:
-        raise RuntimeError(f"Error fetching football standings: {e}") from e
+        raise DataFetchError(f"Error fetching football standings: {e}") from e
 
 
 # -------------------------------------------------------------------

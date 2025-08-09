@@ -22,6 +22,7 @@ from ..base.constants import (
     PLAYER_SEASON_TOTALS_STATS_START_INDEX,
     SEASON_URLS,
 )
+from ..base.exceptions import DataFetchError
 from ..base.types import LeagueType, SeasonType
 from .constants import PLAYER_SORT_CATEGORIES, PLAYER_STATS_COLUMNS_TYPE_MAPPING
 
@@ -102,7 +103,7 @@ async def _fetching_player_stats(url: str) -> list[dict[str, Any]]:
         return all_data
 
     except Exception as e:
-        raise RuntimeError(f"Error fetching player_stats: {e}") from e
+        raise DataFetchError(f"Error fetching player_stats: {e}") from e
 
 
 # -------------------------------------------------------------------

@@ -28,8 +28,8 @@ poetry add git+https://github.com/ojadeyemi/usports.git
 ## Usage
 
 ```python
-from usports.basketball import usports_bball_players, usports_bball_teams
-from usports.football import usports_fball_teams, usports_fball_players
+from usports.basketball import usports_bball_players, usports_bball_teams, usports_bball_standings
+from usports.football import usports_fball_teams, usports_fball_players, usports_fball_standings
 
 # Men's basketball player stats
 men_bball_player_stats = usports_bball_players('m')
@@ -42,6 +42,12 @@ men_fball_team_stats = usports_fball_teams('playoffs')
 
 # Women's basketball team stats for playoffs
 women_playoffs_stats = usports_bball_teams('w', 'playoffs')
+
+# Men's basketball standings
+men_bball_standings = usports_bball_standings('m')
+
+# Football standings
+fball_standings = usports_fball_standings()
 ```
 
 Both functions return **pandas DataFrames** with the requested statistics.

@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup, Tag
 from pandas.errors import EmptyDataError
 
 from ..base.constants import BASE_URL, BS4_PARSER, FOOTBALL_PLAYER_STATS_OFFSET, SEASON_URLS
+from ..base.exceptions import DataFetchError
 from ..base.types import SeasonType
 from ..utils import (
     clean_text,
@@ -78,7 +79,7 @@ async def _fetching_player_stats(url: str) -> list[dict[str, Any]]:
         return all_data
 
     except Exception as e:
-        raise RuntimeError(f"Error fetching player_stats: {e}") from e
+        raise DataFetchError(f"Error fetching player_stats: {e}") from e
 
 
 # -------------------------------------------------------------------
