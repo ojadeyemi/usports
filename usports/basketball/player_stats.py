@@ -1,5 +1,5 @@
 import asyncio
-from typing import Any, Literal
+from typing import Any
 
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
@@ -14,15 +14,15 @@ from usports.utils import (
     split_made_attempted,
     validate_season_option,
 )
-from usports.utils.constants import (
+
+from ..base.constants import (
     BASE_URL,
     BASKETBALL_PLAYER_STATS_OFFSET,
     BS4_PARSER,
     PLAYER_SEASON_TOTALS_STATS_START_INDEX,
     SEASON_URLS,
 )
-from usports.utils.types import SeasonType
-
+from ..base.types import LeagueType, SeasonType
 from .constants import PLAYER_SORT_CATEGORIES, PLAYER_STATS_COLUMNS_TYPE_MAPPING
 
 logger = setup_logging()
@@ -166,14 +166,14 @@ async def _fetch_and_merge_player_stats(urls: list[str]) -> pd.DataFrame:
 
 
 def usports_bball_players(
-    league: Literal["m", "men", "w", "women"],
+    league: LeagueType,
     season_option: SeasonType = "regular",
 ) -> pd.DataFrame:
     """
     Fetch and process player statistics data from the USports website.
 
     Args:
-        league (str): Gender of the players. Accepts 'men', 'women', 'm', or 'w' (case insensitive).
+        league (str): Gender of the players. Accepts  'm', or 'w' (case insensitive).
         season_option (str): The season option to fetch data for. Options are:
             - 'regular': Regular season statistics (default).
             - 'playoffs': Playoff season statistics.

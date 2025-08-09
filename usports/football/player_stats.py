@@ -1,3 +1,5 @@
+"""Football player stats"""
+
 import asyncio
 from typing import Any
 
@@ -5,22 +7,16 @@ import pandas as pd
 from bs4 import BeautifulSoup, Tag
 from pandas.errors import EmptyDataError
 
-from usports.utils import (
+from ..base.constants import BASE_URL, BS4_PARSER, FOOTBALL_PLAYER_STATS_OFFSET, SEASON_URLS
+from ..base.types import SeasonType
+from ..utils import (
     clean_text,
     convert_types,
     fetch_page_html,
     setup_logging,
     validate_season_option,
 )
-from usports.utils.constants import (
-    BASE_URL,
-    BS4_PARSER,
-    FOOTBALL_PLAYER_STATS_OFFSET,  # noqa: F401
-    SEASON_URLS,
-)
-from usports.utils.types import SeasonType
-
-from .constants import FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING, PLAYER_SORT_CATEGORIES  # noqa: F401
+from .constants import FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING, PLAYER_SORT_CATEGORIES
 
 logger = setup_logging()
 
@@ -50,7 +46,7 @@ def _parse_player_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[d
 
 
 def _merge_player_data(existing_data: list[dict[str, Any]], new_data: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """Merge existing and new player data by (name, school, games_played)."""
+    """Merge existing and new player data by (name, school)."""
 
     def key_func(d: dict[str, Any]) -> str:
         return f"{d['player_name']}_{d['school']}"
@@ -119,11 +115,10 @@ async def _get_players_stats_df(stats_url: str) -> pd.DataFrame:
     return df
 
 
-def _construct_player_urls(season_option: str) -> list[str]:
+def _construct_player_urls(season: SeasonType) -> list[str]:
     """Construct URLs for fetching football player stats."""
-    season = validate_season_option(season_option, SEASON_URLS)
-    sport = "fball"
-    player_stats_url_template = f"{BASE_URL}/{sport}/{season}/players?pos={{sort_position}}&sort={{sort_category}}"
+    season_url = validate_season_option(season, SEASON_URLS)
+    player_stats_url_template = f"{BASE_URL}/fball/{season_url}/players?pos={{sort_position}}&sort={{sort_category}}"
 
     urls = [
         player_stats_url_template.format(sort_position=position, sort_category=category)
@@ -154,10 +149,10 @@ def usports_fball_players(season_option: SeasonType = "regular") -> pd.DataFrame
     Get football player stats for a given season.
 
     Args:
-        season_option: Season type ('regular' or 'playoff')
+        season_option: 'regular', 'playoffs', or 'championship'
 
     Returns:
-        pd.DataFrame: DataFrame containing player stats
+        DataFrame containing player stats
     """
     season_option = season_option.lower()  # type: ignore
     urls = _construct_player_urls(season_option)
