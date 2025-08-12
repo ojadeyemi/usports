@@ -1,9 +1,14 @@
+"""Football team performance stats (no W/L)."""
+
 import asyncio
 from typing import Any
 
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
 
+from usports.base.constants import BASE_URL, BS4_PARSER, FOOTBALL, SEASON_URLS
+from usports.base.exceptions import DataFetchError
+from usports.base.types import SeasonType
 from usports.utils import (
     _merge_team_data,
     clean_text,
@@ -13,10 +18,9 @@ from usports.utils import (
     split_made_attempted,
     validate_season_option,
 )
-from usports.utils.constants import BASE_URL, BS4_PARSER, SEASON_URLS, TEAM_CONFERENCES
-from usports.utils.types import SeasonType
+from usports.utils.helpers import get_conference_mapping_for_league
 
-from .constants import FBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING, STANDINGS_COLUMNS_TYPE_MAPPING
+from .constants import FBALL_BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING
 
 logger = setup_logging()
 
@@ -104,35 +108,6 @@ def _parse_football_team_stats_table(soup: BeautifulSoup, columns: list[str]) ->
     return table_data
 
 
-def _parse_standings_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
-    """Parse standings data from an HTML table"""
-    table_data: list[dict[str, Any]] = []
-
-    # Find all rows in the table
-    rows: list[Tag] = soup.find_all("tr")  # type: ignore
-
-    for row in rows:
-        row_data = {}
-
-        # Extract the team name from the <th> element
-        team_name_th = row.find("th", class_="team-name")
-        if team_name_th:
-            team_name_tag = team_name_th.find("a")  # type: ignore
-            if team_name_tag:
-                team_name = clean_text(team_name_tag.get_text())  # type: ignore
-                row_data["team_name"] = team_name
-
-        # Extract the column data from <td> elements
-        cols: list[Tag] = row.find_all("td")  # type: ignore
-        if cols:
-            for col, column_name in zip(cols, columns):
-                row_data[column_name] = clean_text(col.get_text())
-
-            table_data.append(row_data)
-
-    return table_data
-
-
 async def _fetching_team_stats(url: str) -> list[dict[str, Any]]:
     """
     Fetch and merge football team stats data from the given URL.
@@ -141,34 +116,14 @@ async def _fetching_team_stats(url: str) -> list[dict[str, Any]]:
         tables_html = await fetch_page_html(url)
 
         all_data = []
-        for i, column_mapping in enumerate(FBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING):
+        for i, column_mapping in enumerate(FBALL_BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING):
             soup = BeautifulSoup(tables_html[i], BS4_PARSER)
             table_data = _parse_football_team_stats_table(soup, list(column_mapping.keys()))
             all_data = _merge_team_data(all_data, table_data)
 
         return all_data
-    except Exception as e:
-        raise RuntimeError(f"Error fetching football team_stats: {e}") from e
-
-
-async def _fetching_standings(url: str) -> list[dict[str, Any]]:
-    """
-    Fetch standings data from a given URL.
-    """
-    try:
-        tables_html = await fetch_page_html(url)
-
-        all_data = []
-        for table_html in tables_html:
-            soup = BeautifulSoup(table_html, BS4_PARSER)
-            column_names = list(STANDINGS_COLUMNS_TYPE_MAPPING.keys())[1:]
-            standings_data = _parse_standings_table(soup, column_names)
-            all_data.extend(standings_data)
-
-        return all_data
-
-    except Exception as e:
-        raise RuntimeError(f"Error fetching football standings: {e}") from e
+    except Exception as e:  # Catch specific exceptions if possible
+        raise DataFetchError(f"Error fetching football team_stats: {e}") from e
 
 
 # -------------------------------------------------------------------
@@ -180,7 +135,7 @@ async def _get_team_stats_df(stats_url: str) -> pd.DataFrame:
     df = pd.DataFrame(team_stats)
     combined_type_mapping: dict[str, type] = {"team_name": str, "games_played": int}
 
-    for mapping in FBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING:
+    for mapping in FBALL_BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING:
         combined_type_mapping.update(mapping)
 
     if not team_stats or df.empty:
@@ -193,87 +148,31 @@ async def _get_team_stats_df(stats_url: str) -> pd.DataFrame:
         df = df[df["games_played"] != "-"]
 
     df = convert_types(df, combined_type_mapping)
+    conference_map = get_conference_mapping_for_league(FOOTBALL)
+    df["conference"] = df["team_name"].map(conference_map).astype(str)
 
     return df
 
 
-async def _get_standings_df(standings_url: str) -> pd.DataFrame:
-    """function to handle stadnings data into a pandas DataFrame"""
-    standings_data = await _fetching_standings(standings_url)
+async def _fetch_team_stats(season: SeasonType) -> pd.DataFrame:
+    """Fetch team performance stats."""
+    season_url = validate_season_option(season, SEASON_URLS)
+    team_stats_url = f"{BASE_URL}/fball/{season_url}/teams"
 
-    standings_df = pd.DataFrame(standings_data)
+    logger.debug(f"FETCHING FOOTBALL {season.upper()} TEAM STATISTICS")
 
-    if not standings_data or standings_df.empty:
-        return pd.DataFrame(columns=STANDINGS_COLUMNS_TYPE_MAPPING.keys())  # type: ignore
-
-    standings_df = convert_types(standings_df, STANDINGS_COLUMNS_TYPE_MAPPING)
-    standings_df = standings_df.drop(columns=["ties"])
-
-    return standings_df
-
-
-def _construct_team_url(season_option: str) -> tuple[str, str]:
-    season = validate_season_option(season_option, SEASON_URLS)
-    sport = "fball"
-
-    team_stats_url = f"{BASE_URL}/{sport}/{season}/teams"
-    standings_url = f"{BASE_URL}/{sport}/{season}/standings"
-
-    return team_stats_url, standings_url
-
-
-async def _combine_data(season_option: str) -> pd.DataFrame:
-    """
-    Combine football team stats and standings data into a single DataFrame.
-    For playoffs/championship, only team stats are fetched.
-    For regular season, standings data is merged with team stats, and games_played from standings takes precedence.
-    """
-    if season_option not in SEASON_URLS:
-        raise ValueError(f"Invalid season_option: {season_option}. Must be one of {', '.join(SEASON_URLS.keys())}")
-
-    team_stats_url, standings_url = _construct_team_url(season_option)
-
-    if season_option in ["playoffs", "championship"]:
-        logger.debug(f"FETCHING FBALL {season_option.upper()} SEASON STATISTICS")
-        team_stats_df = await _get_team_stats_df(team_stats_url)
-        team_stats_df["conference"] = team_stats_df["team_name"].map(TEAM_CONFERENCES).astype(str)
-        return team_stats_df
-
-    logger.debug(f"FETCHING FBALL {season_option.upper()} SEASON STANDINGS")
-    standings_df = await _get_standings_df(standings_url)
-    logger.debug(f"FETCHING FBALL {season_option.upper()} SEASON STATISTICS")
-    team_stats_df = await _get_team_stats_df(team_stats_url)
-
-    combined_df = pd.merge(
-        standings_df,
-        team_stats_df,
-        on="team_name",
-        how="left",
-        suffixes=("_standings", "_team_stats"),
-    )
-    if not combined_df.empty:
-        combined_df["games_played"] = combined_df["games_played_standings"].fillna(
-            combined_df["games_played_team_stats"]
-        )
-        combined_df = combined_df.drop(columns=["games_played_standings", "games_played_team_stats"])
-        combined_df["conference"] = combined_df["team_name"].map(TEAM_CONFERENCES).astype(str)
-    return combined_df
+    return await _get_team_stats_df(team_stats_url)
 
 
 def usports_fball_teams(season_option: SeasonType = "regular") -> pd.DataFrame:
     """
-    Retrieve U Sports men football team stats.
+    Get football team stats.
 
-        Args:
-        season_option (str): The season type to fetch data for. Options are:
-            - 'regular': Regular season statistics (default).
-            - 'playoffs': Playoff season statistics.
-            - 'championship': Championship season statistics.
+    Args:
+        season_option: 'regular', 'playoffs', or 'championship'
 
     Returns:
-        DataFrame: DataFrame containing the combined team stats.
-
+        DataFrame with team stats
     """
     season_option = season_option.lower()  # type: ignore
-    df = asyncio.run(_combine_data(season_option))
-    return df
+    return asyncio.run(_fetch_team_stats(season_option))

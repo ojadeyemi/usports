@@ -1,10 +1,19 @@
 import asyncio
-from typing import Any, Literal
+from typing import Any
 
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
 from pandas.errors import EmptyDataError
 
+from usports.base.constants import (
+    BASE_URL,
+    BASKETBALL_PLAYER_STATS_OFFSET,
+    BS4_PARSER,
+    PLAYER_SEASON_TOTALS_STATS_START_INDEX,
+    SEASON_URLS,
+)
+from usports.base.exceptions import DataFetchError
+from usports.base.types import LeagueType, SeasonType
 from usports.utils import (
     clean_text,
     convert_types,
@@ -14,14 +23,6 @@ from usports.utils import (
     split_made_attempted,
     validate_season_option,
 )
-from usports.utils.constants import (
-    BASE_URL,
-    BASKETBALL_PLAYER_STATS_OFFSET,
-    BS4_PARSER,
-    PLAYER_SEASON_TOTALS_STATS_START_INDEX,
-    SEASON_URLS,
-)
-from usports.utils.types import SeasonType
 
 from .constants import PLAYER_SORT_CATEGORIES, PLAYER_STATS_COLUMNS_TYPE_MAPPING
 
@@ -30,10 +31,10 @@ logger = setup_logging()
 
 def _get_sport_identifier(gender: str) -> str:
     """Get the sport identifier based on gender."""
-    if gender == "men":
+    if gender == "m":
         return "mbkb"
 
-    if gender == "women":
+    if gender == "w":
         return "wbkb"
 
     raise ValueError("Argument must be 'men' or 'women'")
@@ -102,7 +103,7 @@ async def _fetching_player_stats(url: str) -> list[dict[str, Any]]:
         return all_data
 
     except Exception as e:
-        raise RuntimeError(f"Error fetching player_stats: {e}") from e
+        raise DataFetchError(f"Error fetching player_stats: {e}") from e
 
 
 # -------------------------------------------------------------------
@@ -166,14 +167,14 @@ async def _fetch_and_merge_player_stats(urls: list[str]) -> pd.DataFrame:
 
 
 def usports_bball_players(
-    league: Literal["m", "men", "w", "women"],
+    league: LeagueType,
     season_option: SeasonType = "regular",
 ) -> pd.DataFrame:
     """
     Fetch and process player statistics data from the USports website.
 
     Args:
-        league (str): Gender of the players. Accepts 'men', 'women', 'm', or 'w' (case insensitive).
+        league (str): Gender of the players. Accepts  'm', or 'w' (case insensitive).
         season_option (str): The season option to fetch data for. Options are:
             - 'regular': Regular season statistics (default).
             - 'playoffs': Playoff season statistics.

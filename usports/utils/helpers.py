@@ -7,7 +7,9 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from pandas import DataFrame
 
-from .constants import BS4_PARSER, TIMEOUT
+from usports.base.constants import BS4_PARSER, DEFAULT_SCHOOL_CONFERENCES, LEAGUE_CONFERENCE_OVERRIDES, TIMEOUT
+from usports.base.exceptions import DataFetchError, ParsingError
+
 from .headers import get_random_header
 
 
@@ -25,7 +27,7 @@ async def fetch_page_html(url: str) -> list[str]:
     tables = soup.find_all("table")
 
     if not tables:
-        raise ValueError(f"No <table> elements found at {url}")
+        raise DataFetchError(f"No <table> elements found at {url}")
 
     return [str(table).replace("\n", "").replace("\t", "") for table in tables]
 
@@ -41,8 +43,8 @@ def split_made_attempted(value: str) -> tuple[int, int]:
     try:
         made, attempted = normalized_value.split("-")
         return int(made), int(attempted)
-    except ValueError as e:
-        raise ValueError(f"Error splitting made and attempted values from '{value}': {e}") from e
+    except (ValueError, TypeError) as e:
+        raise ParsingError(f"Error splitting made and attempted values from '{value}': {e}") from e
 
 
 def clean_text(text: str) -> str:
@@ -80,10 +82,10 @@ def normalize_gender_arg(arg: Literal["m", "men", "w", "women"]) -> str:
     arg_lower = arg.lower()
 
     if arg_lower in ["m", "men"]:
-        return "men"
+        return "m"
 
     if arg_lower in ["w", "women"]:
-        return "women"
+        return "w"
 
     raise ValueError("The argument 'arg' should be either 'men', 'm', 'w', or 'women'")
 
@@ -115,3 +117,12 @@ def _merge_team_data(existing_data: list[dict[str, Any]], new_data: list[dict[st
             data_dict[key] = new_item
 
     return list(data_dict.values())
+
+
+def get_conference_mapping_for_league(league: str) -> dict[str, str]:
+    """Maps team name (school) to conference where school plays for specific league"""
+    mapping = DEFAULT_SCHOOL_CONFERENCES.copy()
+    overrides = LEAGUE_CONFERENCE_OVERRIDES.get(league, {})
+    mapping.update(overrides)
+
+    return mapping

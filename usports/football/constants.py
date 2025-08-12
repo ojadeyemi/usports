@@ -1,6 +1,6 @@
 """Contains football related constants"""
 
-FBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
+FBALL_BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     # Table 1: Scoring/Offensive Scoring Breakdown
     {
         "touchdowns": int,
@@ -116,7 +116,7 @@ FBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
 ]
 
 
-STANDINGS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
+FBALL_STANDINGS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
     "team_name": str,
     "games_played": int,
     "total_wins": int,

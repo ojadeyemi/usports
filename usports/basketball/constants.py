@@ -1,6 +1,6 @@
 """Contains basketball related constants"""
 
-TEAM_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
+BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
     {
         "field_goal_made": int,
         "field_goal_percentage": float,
@@ -54,7 +54,7 @@ TEAM_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
 ]
 
 
-STANDINGS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
+BBALL_STANDINGS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
     "team_name": str,
     "games_played": int,
     "total_wins": int,
