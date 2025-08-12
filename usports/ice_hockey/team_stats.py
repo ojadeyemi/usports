@@ -20,7 +20,7 @@ from usports.utils import (
 )
 from usports.utils.helpers import get_conference_mapping_for_league
 
-from .constants import ICE_HOCKEY_TEAM_STATS_COLUMNS_TYPE_MAPPING
+from .constants import ICE_HOCKEY_BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING
 from .player_stats import _get_sport_identifier
 
 logger = setup_logging()
@@ -59,7 +59,7 @@ async def _fetching_team_stats(url: str) -> list[dict[str, Any]]:
 
         all_data = []
         soup = BeautifulSoup(tables_html[0], BS4_PARSER)
-        table_data = _parse_team_stats_table(soup, list(ICE_HOCKEY_TEAM_STATS_COLUMNS_TYPE_MAPPING.keys()))
+        table_data = _parse_team_stats_table(soup, list(ICE_HOCKEY_BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING.keys()))
         all_data = _merge_team_data(all_data, table_data)
 
         return all_data
@@ -78,7 +78,7 @@ async def _get_team_stats_df(stats_url: str) -> pd.DataFrame:
 
     combined_type_mapping: dict[str, type] = {"team_name": str, "games_played": int}
 
-    combined_type_mapping.update(ICE_HOCKEY_TEAM_STATS_COLUMNS_TYPE_MAPPING)
+    combined_type_mapping.update(ICE_HOCKEY_BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING)
 
     if not team_stats or df.empty:
         return pd.DataFrame(columns=combined_type_mapping.keys())  # type: ignore

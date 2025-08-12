@@ -1,6 +1,6 @@
 """Contains ice hockey related constants"""
 
-ICE_HOCKEY_TEAM_STATS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
+ICE_HOCKEY_BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
     "goals": int,
     "assists": int,
     "goals_per_game": float,
@@ -52,7 +52,7 @@ ICE_HOCKEY_GOALIE_STATS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
     "win_percentage": float,
 }
 
-ICE_HOCKEY_STANDINGS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
+ICE_HOCKEY_FBALL_STANDINGS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
     "team_name": str,
     "games_played": int,
     "total_wins": int,

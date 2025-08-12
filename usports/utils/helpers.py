@@ -82,10 +82,10 @@ def normalize_gender_arg(arg: Literal["m", "men", "w", "women"]) -> str:
     arg_lower = arg.lower()
 
     if arg_lower in ["m", "men"]:
-        return "men"
+        return "m"
 
     if arg_lower in ["w", "women"]:
-        return "women"
+        return "w"
 
     raise ValueError("The argument 'arg' should be either 'men', 'm', 'w', or 'women'")
 

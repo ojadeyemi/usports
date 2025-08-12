@@ -18,7 +18,7 @@ from usports.utils import (
 )
 from usports.utils.helpers import get_conference_mapping_for_league
 
-from .constants import ICE_HOCKEY_STANDINGS_COLUMNS_TYPE_MAPPING
+from .constants import ICE_HOCKEY_FBALL_STANDINGS_COLUMNS_TYPE_MAPPING
 from .player_stats import _get_sport_identifier
 
 logger = setup_logging()
@@ -63,7 +63,7 @@ async def _fetching_standings(url: str) -> list[dict[str, Any]]:
         all_data = []
         for table_html in tables_html:
             soup = BeautifulSoup(table_html, BS4_PARSER)
-            column_names = list(ICE_HOCKEY_STANDINGS_COLUMNS_TYPE_MAPPING.keys())[1:]
+            column_names = list(ICE_HOCKEY_FBALL_STANDINGS_COLUMNS_TYPE_MAPPING.keys())[1:]
             standings_data = _parse_standings_table(soup, column_names)
             all_data.extend(standings_data)
 
@@ -83,9 +83,9 @@ async def _get_standings_df(standings_url: str) -> pd.DataFrame:
     standings_df = pd.DataFrame(standings_data)
 
     if not standings_data or standings_df.empty:
-        return pd.DataFrame(columns=ICE_HOCKEY_STANDINGS_COLUMNS_TYPE_MAPPING.keys())  # type: ignore
+        return pd.DataFrame(columns=ICE_HOCKEY_FBALL_STANDINGS_COLUMNS_TYPE_MAPPING.keys())  # type: ignore
 
-    standings_df = convert_types(standings_df, ICE_HOCKEY_STANDINGS_COLUMNS_TYPE_MAPPING)
+    standings_df = convert_types(standings_df, ICE_HOCKEY_FBALL_STANDINGS_COLUMNS_TYPE_MAPPING)
     standings_df = standings_df.drop(columns=["ties"])
     standings_df = standings_df.dropna(subset=["team_name"])
     standings_df = standings_df[standings_df["team_name"] != "nan"]

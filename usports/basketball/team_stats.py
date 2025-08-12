@@ -21,7 +21,7 @@ from usports.utils import (
 )
 from usports.utils.helpers import get_conference_mapping_for_league
 
-from .constants import TEAM_STATS_COLUMNS_TYPE_MAPPING
+from .constants import BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING
 from .player_stats import _get_sport_identifier
 
 logger = setup_logging()
@@ -69,7 +69,7 @@ async def _fetching_team_stats(url: str) -> list[dict[str, Any]]:
         tables_html = await fetch_page_html(url)
 
         all_data = []
-        for i, column_mapping in enumerate(TEAM_STATS_COLUMNS_TYPE_MAPPING):
+        for i, column_mapping in enumerate(BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING):
             soup = BeautifulSoup(tables_html[i], BS4_PARSER)
             table_data = _parse_team_stats_table(soup, list(column_mapping.keys()))
             all_data = _merge_team_data(all_data, table_data)
@@ -90,7 +90,7 @@ async def _get_team_stats_df(stats_url: str) -> pd.DataFrame:
 
     combined_type_mapping: dict[str, type] = {"team_name": str, "games_played": int}
 
-    for mapping in TEAM_STATS_COLUMNS_TYPE_MAPPING:
+    for mapping in BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING:
         combined_type_mapping.update(mapping)
 
     if not team_stats or df.empty:

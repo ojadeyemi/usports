@@ -1,12 +1,13 @@
 import asyncio
-from typing import Any, Literal
+from typing import Any
 
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
 from pandas.errors import EmptyDataError
 
 from usports.base.constants import BASE_URL, BS4_PARSER, PLAYER_SEASON_TOTALS_STATS_START_INDEX, SEASON_URLS
-from usports.base.types import SeasonType
+from usports.base.exceptions import DataFetchError
+from usports.base.types import LeagueType, SeasonType
 from usports.utils import (
     clean_text,
     convert_types,
@@ -27,9 +28,9 @@ logger = setup_logging()
 
 
 def _get_sport_identifier(league: str) -> str:
-    if league == "men":
+    if league == "m":
         return "mice"
-    if league == "women":
+    if league == "w":
         return "wice"
     raise ValueError(f"Invalid league: {league}. Must be one of 'men' or 'women'")
 
@@ -69,7 +70,7 @@ async def _fetching_player_stats(url: str) -> list[dict[str, Any]]:
         return _parse_player_stats_table(soup, list(ICE_HOCKEY_PLAYER_STATS_COLUMNS_TYPE_MAPPING.keys()))
 
     except Exception as e:
-        raise RuntimeError(f"Error fetching player stats: {e}") from e
+        raise DataFetchError(f"Error fetching player stats: {e}") from e
 
 
 async def _fetching_goalie_stats(url: str) -> list[dict[str, Any]]:
@@ -178,14 +179,14 @@ async def _fetch_and_merge_player_stats(player_stats_urls: list[str], goalie_sta
 
 
 def usports_ice_hockey_players(
-    league: Literal["m", "men", "w", "women"],
+    league: LeagueType,
     season_option: SeasonType = "regular",
 ) -> pd.DataFrame:
     """
     Fetch and process ice hockey players statistics data from the USPORTS website.
 
     Args:
-        league (str): Gender of the players. Accepts 'men', 'women', 'm', or 'w' (case insensitive).
+        league (str): Gender of the players. Accepts 'm', or 'w' (case insensitive).
         season_option (str): The season option to fetch data for. Options are:
             - 'regular': Regular season statistics (default).
             - 'playoffs': Playoff season statistics.

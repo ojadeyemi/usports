@@ -31,10 +31,10 @@ logger = setup_logging()
 
 def _get_sport_identifier(gender: str) -> str:
     """Get the sport identifier based on gender."""
-    if gender == "men":
+    if gender == "m":
         return "mbkb"
 
-    if gender == "women":
+    if gender == "w":
         return "wbkb"
 
     raise ValueError("Argument must be 'men' or 'women'")
