@@ -6,10 +6,10 @@ from typing import Any
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
 
-from ..base.constants import BASE_URL, BS4_PARSER, SEASON_URLS, TEAM_CONFERENCES
-from ..base.exceptions import DataFetchError
-from ..base.types import SeasonType
-from ..utils import (
+from usports.base.constants import BASE_URL, BS4_PARSER, FOOTBALL, SEASON_URLS
+from usports.base.exceptions import DataFetchError
+from usports.base.types import SeasonType
+from usports.utils import (
     _merge_team_data,
     clean_text,
     convert_types,
@@ -18,6 +18,8 @@ from ..utils import (
     split_made_attempted,
     validate_season_option,
 )
+from usports.utils.helpers import get_conference_mapping_for_league
+
 from .constants import FBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING
 
 logger = setup_logging()
@@ -146,7 +148,8 @@ async def _get_team_stats_df(stats_url: str) -> pd.DataFrame:
         df = df[df["games_played"] != "-"]
 
     df = convert_types(df, combined_type_mapping)
-    df["conference"] = df["team_name"].map(TEAM_CONFERENCES).astype(str)
+    conference_map = get_conference_mapping_for_league(FOOTBALL)
+    df["conference"] = df["team_name"].map(conference_map).astype(str)
 
     return df
 

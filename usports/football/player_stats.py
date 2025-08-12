@@ -7,16 +7,17 @@ import pandas as pd
 from bs4 import BeautifulSoup, Tag
 from pandas.errors import EmptyDataError
 
-from ..base.constants import BASE_URL, BS4_PARSER, FOOTBALL_PLAYER_STATS_OFFSET, SEASON_URLS
-from ..base.exceptions import DataFetchError
-from ..base.types import SeasonType
-from ..utils import (
+from usports.base.constants import BASE_URL, BS4_PARSER, FOOTBALL_PLAYER_STATS_OFFSET, SEASON_URLS
+from usports.base.exceptions import DataFetchError
+from usports.base.types import SeasonType
+from usports.utils import (
     clean_text,
     convert_types,
     fetch_page_html,
     setup_logging,
     validate_season_option,
 )
+
 from .constants import FBALL_PLAYER_STATS_COLUMNS_TYPE_MAPPING, PLAYER_SORT_CATEGORIES
 
 logger = setup_logging()

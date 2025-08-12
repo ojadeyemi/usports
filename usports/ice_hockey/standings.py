@@ -1,4 +1,4 @@
-"""Basketball standings"""
+"""Ice Hockey standings"""
 
 import asyncio
 from typing import Any
@@ -6,7 +6,7 @@ from typing import Any
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
 
-from usports.base.constants import BASE_URL, BS4_PARSER, DEFAULT_SCHOOL_CONFERENCES, SEASON
+from usports.base.constants import BASE_URL, BS4_PARSER, ICE_HOCKEY, SEASON
 from usports.base.exceptions import DataFetchError
 from usports.base.types import LeagueType
 from usports.utils import (
@@ -16,8 +16,9 @@ from usports.utils import (
     normalize_gender_arg,
     setup_logging,
 )
+from usports.utils.helpers import get_conference_mapping_for_league
 
-from .constants import STANDINGS_COLUMNS_TYPE_MAPPING
+from .constants import ICE_HOCKEY_STANDINGS_COLUMNS_TYPE_MAPPING
 from .player_stats import _get_sport_identifier
 
 logger = setup_logging()
@@ -62,14 +63,14 @@ async def _fetching_standings(url: str) -> list[dict[str, Any]]:
         all_data = []
         for table_html in tables_html:
             soup = BeautifulSoup(table_html, BS4_PARSER)
-            column_names = list(STANDINGS_COLUMNS_TYPE_MAPPING.keys())[1:]
+            column_names = list(ICE_HOCKEY_STANDINGS_COLUMNS_TYPE_MAPPING.keys())[1:]
             standings_data = _parse_standings_table(soup, column_names)
             all_data.extend(standings_data)
 
         return all_data
 
     except Exception as e:
-        raise DataFetchError(f"Error fetching basketball standings: {e}") from e
+        raise DataFetchError(f"Error fetching ice hockey standings: {e}") from e
 
 
 # -------------------------------------------------------------------
@@ -82,12 +83,14 @@ async def _get_standings_df(standings_url: str) -> pd.DataFrame:
     standings_df = pd.DataFrame(standings_data)
 
     if not standings_data or standings_df.empty:
-        return pd.DataFrame(columns=STANDINGS_COLUMNS_TYPE_MAPPING.keys())  # type: ignore
+        return pd.DataFrame(columns=ICE_HOCKEY_STANDINGS_COLUMNS_TYPE_MAPPING.keys())  # type: ignore
 
-    standings_df = convert_types(standings_df, STANDINGS_COLUMNS_TYPE_MAPPING)
+    standings_df = convert_types(standings_df, ICE_HOCKEY_STANDINGS_COLUMNS_TYPE_MAPPING)
     standings_df = standings_df.drop(columns=["ties"])
-    # TODO use get fucnitonmapping fucnitioon here as well
-    standings_df["conference"] = standings_df["team_name"].map(DEFAULT_SCHOOL_CONFERENCES).astype(str)
+    standings_df = standings_df.dropna(subset=["team_name"])
+    standings_df = standings_df[standings_df["team_name"] != "nan"]
+    conference_map = get_conference_mapping_for_league(ICE_HOCKEY)
+    standings_df["conference"] = standings_df["team_name"].map(conference_map).astype(str)
 
     return standings_df
 
@@ -97,14 +100,14 @@ async def _fetch_standings(league: LeagueType) -> pd.DataFrame:
     sport = _get_sport_identifier(normalize_gender_arg(league))
     standings_url = f"{BASE_URL}/{sport}/{SEASON}/standings"
 
-    logger.debug(f"FETCHING {league.upper()} BASKETBALL STANDINGS")
+    logger.debug(f"FETCHING {league.upper()} ICE HOCKEY STANDINGS")
 
     return await _get_standings_df(standings_url)
 
 
-def usports_bball_standings(league: LeagueType) -> pd.DataFrame:
+def usports_ice_hockey_standings(league: LeagueType) -> pd.DataFrame:
     """
-    Get basketball standings (regular season only).
+    Get ice hockey standings (regular season only).
 
     Args:
         league: 'm' or 'w'

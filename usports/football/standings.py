@@ -6,14 +6,15 @@ from typing import Any
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
 
-from ..base.constants import BASE_URL, BS4_PARSER, SEASON, TEAM_CONFERENCES
-from ..base.exceptions import DataFetchError
-from ..utils import (
+from usports.base.constants import BASE_URL, BS4_PARSER, DEFAULT_SCHOOL_CONFERENCES, SEASON
+from usports.base.exceptions import DataFetchError
+from usports.utils import (
     clean_text,
     convert_types,
     fetch_page_html,
     setup_logging,
 )
+
 from .constants import STANDINGS_COLUMNS_TYPE_MAPPING
 
 logger = setup_logging()
@@ -82,7 +83,7 @@ async def _get_standings_df(standings_url: str) -> pd.DataFrame:
 
     standings_df = convert_types(standings_df, STANDINGS_COLUMNS_TYPE_MAPPING)
     standings_df = standings_df.drop(columns=["ties"])
-    standings_df["conference"] = standings_df["team_name"].map(TEAM_CONFERENCES).astype(str)
+    standings_df["conference"] = standings_df["team_name"].map(DEFAULT_SCHOOL_CONFERENCES).astype(str)
 
     return standings_df
 

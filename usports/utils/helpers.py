@@ -7,9 +7,9 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from pandas import DataFrame
 
+from usports.base.constants import BS4_PARSER, DEFAULT_SCHOOL_CONFERENCES, LEAGUE_CONFERENCE_OVERRIDES, TIMEOUT
 from usports.base.exceptions import DataFetchError, ParsingError
 
-from .constants import BS4_PARSER, TIMEOUT
 from .headers import get_random_header
 
 
@@ -117,3 +117,12 @@ def _merge_team_data(existing_data: list[dict[str, Any]], new_data: list[dict[st
             data_dict[key] = new_item
 
     return list(data_dict.values())
+
+
+def get_conference_mapping_for_league(league: str) -> dict[str, str]:
+    """Maps team name (school) to conference where school plays for specific league"""
+    mapping = DEFAULT_SCHOOL_CONFERENCES.copy()
+    overrides = LEAGUE_CONFERENCE_OVERRIDES.get(league, {})
+    mapping.update(overrides)
+
+    return mapping

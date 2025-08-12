@@ -5,6 +5,15 @@ import pandas as pd
 from bs4 import BeautifulSoup, Tag
 from pandas.errors import EmptyDataError
 
+from usports.base.constants import (
+    BASE_URL,
+    BASKETBALL_PLAYER_STATS_OFFSET,
+    BS4_PARSER,
+    PLAYER_SEASON_TOTALS_STATS_START_INDEX,
+    SEASON_URLS,
+)
+from usports.base.exceptions import DataFetchError
+from usports.base.types import LeagueType, SeasonType
 from usports.utils import (
     clean_text,
     convert_types,
@@ -15,15 +24,6 @@ from usports.utils import (
     validate_season_option,
 )
 
-from ..base.constants import (
-    BASE_URL,
-    BASKETBALL_PLAYER_STATS_OFFSET,
-    BS4_PARSER,
-    PLAYER_SEASON_TOTALS_STATS_START_INDEX,
-    SEASON_URLS,
-)
-from ..base.exceptions import DataFetchError
-from ..base.types import LeagueType, SeasonType
 from .constants import PLAYER_SORT_CATEGORIES, PLAYER_STATS_COLUMNS_TYPE_MAPPING
 
 logger = setup_logging()

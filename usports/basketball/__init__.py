@@ -24,7 +24,7 @@ Date Created:
 """
 
 from .player_stats import usports_bball_players
-from .team_stats import usports_bball_teams
 from .standings import usports_bball_standings
+from .team_stats import usports_bball_teams
 
 __all__ = ["usports_bball_players", "usports_bball_teams", "usports_bball_standings"]
