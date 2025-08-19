@@ -28,7 +28,7 @@ jobs:
         run: poetry install --with dev
 
       - name: Run pylint (code quality)
-        run: poetry run pylint --rcfile=.pylintrc $(git ls-files '*.py')  --fail-under=8.5
+        run: poetry run pylint --rcfile=.pylintrc $(git ls-files '*.py')  --fail-under=9.5
 
   # Job 2: Run Tests
   test:

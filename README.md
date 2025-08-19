@@ -16,14 +16,13 @@ poetry add git+https://github.com/ojadeyemi/usports.git
 
 ## Supported Sports
 
-| Sport        | Status         | League      |
-| ------------ | -------------- | ----------- |
-| Basketball   | ✅ Available   | Men & Women |
-| Football     | ✅ Available   | Men         |
-| Ice Hockey   | ✅ Available   | Men & Women |
-| Volleyball   | 🔄 In Progress | Men & Women |
-| Soccer       | 🔄 In Progress | Men & Women |
-| Field Hockey | 🔄 In Progress | Women       |
+| Sport      | Status         | League      |
+| ---------- | -------------- | ----------- |
+| Basketball | ✅ Available   | Men & Women |
+| Football   | ✅ Available   | Men         |
+| Ice Hockey | ✅ Available   | Men & Women |
+| Volleyball | ✅ Available   | Men & Women |
+| Soccer     | 🔄 In Progress | Men & Women |
 
 ## Usage
 
