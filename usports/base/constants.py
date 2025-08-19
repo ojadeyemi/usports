@@ -3,15 +3,19 @@
 # Base URL
 BASE_URL = "https://universitysport.prestosports.com/sports"
 
-# Current season
-SEASON = "2024-25"
+# Season identifiers
+FALL_SEASON = "2024-25"
+WINTER_SEASON = "2024-25"
 
-# Season URL mappings
-SEASON_URLS = {
-    "regular": SEASON,
-    "playoffs": f"{SEASON}p",
-    "championship": f"{SEASON}c",
-}
+
+# Current season based on sport type
+def get_current_season(sport: str) -> str:
+    """Get current season based on sport type."""
+    fall_sports = ["football", "soccer"]
+    if any(s in sport.lower() for s in fall_sports):
+        return FALL_SEASON
+    return WINTER_SEASON
+
 
 # Parser settings
 BS4_PARSER = "html.parser"
@@ -22,23 +26,10 @@ RSEQ = "RSEQ"
 CW = "CW"
 AUS = "AUS"
 
-
 # Stats table offsets
 PLAYER_SEASON_TOTALS_STATS_START_INDEX = 3
 BASKETBALL_PLAYER_STATS_OFFSET = 5
 FOOTBALL_PLAYER_STATS_OFFSET = 3
-
-BS4_PARSER = "html.parser"
-# Season identifier, update this when the season changes
-SEASON = "2024-25"
-
-# Mapping of season options to their corresponding URL fragments
-SEASON_URLS = {
-    "regular": SEASON,
-    "playoffs": f"{SEASON}p",
-    "championship": f"{SEASON}c",
-}
-
 
 BASKETBALL = "basketball"
 FOOTBALL = "football"
@@ -82,7 +73,7 @@ DEFAULT_SCHOOL_CONFERENCES = {
     "RMC": OUA,
     "Saint Mary's": AUS,
     "Saskatchewan": CW,
-    "Sherbooke": RSEQ,
+    "Sherbrooke": RSEQ,
     "StFX": AUS,
     "Thompson Rivers": CW,
     "Toronto": OUA,
@@ -105,7 +96,6 @@ DEFAULT_SCHOOL_CONFERENCES = {
     "York": OUA,
 }
 
-
 LEAGUE_CONFERENCE_OVERRIDES = {
     ICE_HOCKEY: {
         "McGill": OUA,  # McGill is normally RSEQ, but in hockey they're OUA
@@ -113,5 +103,18 @@ LEAGUE_CONFERENCE_OVERRIDES = {
         "Concordia": OUA,  # Concordia is normally RSEQ, but in hockey they're OUA
     },
     FOOTBALL: {},
-    # other leagues can be added as needed
+    VOLLEYBALL: {
+        "Dalhousie": RSEQ,  # Dalhousie is normally AUS, but in volleyball they're RSEQ
+        "UNB": RSEQ,
+    },
 }
+
+
+def get_season_urls(sport: str) -> dict[str, str]:
+    """Get season URL mappings based on sport."""
+    season = get_current_season(sport)
+    return {
+        "regular": season,
+        "playoffs": f"{season}p",
+        "championship": f"{season}c",
+    }

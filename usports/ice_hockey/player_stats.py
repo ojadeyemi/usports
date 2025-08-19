@@ -5,7 +5,13 @@ import pandas as pd
 from bs4 import BeautifulSoup, Tag
 from pandas.errors import EmptyDataError
 
-from usports.base.constants import BASE_URL, BS4_PARSER, PLAYER_SEASON_TOTALS_STATS_START_INDEX, SEASON_URLS
+from usports.base.constants import (
+    BASE_URL,
+    BS4_PARSER,
+    ICE_HOCKEY,
+    PLAYER_SEASON_TOTALS_STATS_START_INDEX,
+    get_season_urls,
+)
 from usports.base.exceptions import DataFetchError
 from usports.base.types import LeagueType, SeasonType
 from usports.utils import (
@@ -144,7 +150,8 @@ async def _get_goalie_stats_df(goalies_stats_url: str) -> pd.DataFrame:
 
 def _construct_urls(gender: str, season_option: str) -> tuple[list[str], list[str]]:
     sport = _get_sport_identifier(gender)
-    season = validate_season_option(season_option, SEASON_URLS)
+    season_urls = get_season_urls(ICE_HOCKEY)
+    season = validate_season_option(season_option, season_urls)
 
     player_stats_url_template = f"{BASE_URL}/{sport}/{season}/players?sort={{sort_category}}&pos=sk"
     goalie_stats_url_template = f"{BASE_URL}/{sport}/{season}/players?sort={{sort_category}}&pos=g"

@@ -94,14 +94,10 @@ PLAYER_STATS_COLUMNS_TYPE_MAPPING: list[dict[str, type]] = [
 
 PLAYER_SORT_CATEGORIES = [
     "pts",
-    "gp",
-    "gs",
     "min",
     "fgp",
-    "fgpt",
     "fgp3",
     "fgpt3",
-    "ftp",
     "ftpt",
     "oreb",
     "dreb",

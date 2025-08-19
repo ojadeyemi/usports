@@ -6,7 +6,7 @@ from typing import Any
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
 
-from usports.base.constants import BASE_URL, BS4_PARSER, ICE_HOCKEY, SEASON_URLS
+from usports.base.constants import BASE_URL, BS4_PARSER, ICE_HOCKEY, get_season_urls
 from usports.base.exceptions import DataFetchError
 from usports.base.types import LeagueType, SeasonType
 from usports.utils import (
@@ -97,14 +97,12 @@ async def _get_team_stats_df(stats_url: str) -> pd.DataFrame:
 
 
 async def _fetch_team_stats(league: LeagueType, season: SeasonType) -> pd.DataFrame:
-    """Fetch team performance stats."""
     gender = normalize_gender_arg(league)
     sport = _get_sport_identifier(gender)
-    season_url = validate_season_option(season, SEASON_URLS)
+    season_urls = get_season_urls(ICE_HOCKEY)  
+    season_url = validate_season_option(season, season_urls)
     team_stats_url = f"{BASE_URL}/{sport}/{season_url}/teams"
-
     logger.debug(f"FETCHING {gender.upper()} ICE HOCKEY {season.upper()} TEAM STATISTICS")
-
     return await _get_team_stats_df(team_stats_url)
 
 

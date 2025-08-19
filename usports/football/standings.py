@@ -6,7 +6,7 @@ from typing import Any
 import pandas as pd
 from bs4 import BeautifulSoup, Tag
 
-from usports.base.constants import BASE_URL, BS4_PARSER, FOOTBALL, SEASON
+from usports.base.constants import BASE_URL, BS4_PARSER, FOOTBALL, get_current_season
 from usports.base.exceptions import DataFetchError
 from usports.utils import (
     clean_text,
@@ -92,9 +92,8 @@ async def _get_standings_df(standings_url: str) -> pd.DataFrame:
 
 
 async def _fetch_standings() -> pd.DataFrame:
-    """Fetch ONLY standings data - no team stats."""
-    standings_url = f"{BASE_URL}/fball/{SEASON}/standings"
-
+    season = get_current_season(FOOTBALL)
+    standings_url = f"{BASE_URL}/fball/{season}/standings"
     logger.debug("FETCHING FOOTBALL STANDINGS")
 
     return await _get_standings_df(standings_url)

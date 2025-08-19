@@ -11,6 +11,12 @@ Examples:
 >>> regular_season_team_stats = usports_ice_hockey_teams('m','regular_season')
 >>> womens_playoff_team_stats = usports_ice_hockey_teams('w','playoffs')
 >>> womens_championship_team_stats = usports_ice_hockey_teams('w','championship')
+
+Author:
+    OJ Adeyemi
+
+Date Created:
+     August 2025
 """
 
 from .player_stats import usports_ice_hockey_players

@@ -7,7 +7,7 @@ import pandas as pd
 from bs4 import BeautifulSoup, Tag
 from pandas.errors import EmptyDataError
 
-from usports.base.constants import BASE_URL, BS4_PARSER, FOOTBALL_PLAYER_STATS_OFFSET, SEASON_URLS
+from usports.base.constants import BASE_URL, BS4_PARSER, FOOTBALL, FOOTBALL_PLAYER_STATS_OFFSET, get_season_urls
 from usports.base.exceptions import DataFetchError
 from usports.base.types import SeasonType
 from usports.utils import (
@@ -118,8 +118,8 @@ async def _get_players_stats_df(stats_url: str) -> pd.DataFrame:
 
 
 def _construct_player_urls(season: SeasonType) -> list[str]:
-    """Construct URLs for fetching football player stats."""
-    season_url = validate_season_option(season, SEASON_URLS)
+    season_urls = get_season_urls(FOOTBALL)
+    season_url = validate_season_option(season, season_urls)
     player_stats_url_template = f"{BASE_URL}/fball/{season_url}/players?pos={{sort_position}}&sort={{sort_category}}"
 
     urls = [

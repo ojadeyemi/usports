@@ -328,3 +328,78 @@ expected_ice_hockey_players_columns = [
     "ties",
     "win_percentage",
 ]
+
+expected_volleyball_standings_columns = [
+    "team_name",
+    "games_played",
+    "total_wins",
+    "total_losses",
+    "win_percentage",
+    "sets_for",
+    "sets_against",
+    "points",
+    "conference",
+]
+
+expected_volleyball_team_stats_columns = [
+    "team_name",
+    "matches_played",
+    "sets_played",
+    # Offensive stats
+    "kills",
+    "kills_per_set",
+    "errors",
+    "total_attacks",
+    "hitting_percentage",
+    "assists",
+    "assists_per_set",
+    "points",
+    "points_per_set",
+    # Defensive stats
+    "digs",
+    "digs_per_set",
+    "block_solos",
+    "block_assists",
+    "total_blocks",
+    "blocks_per_set",
+    # Serve/Receive stats
+    "service_aces",
+    "service_aces_per_set",
+    "service_errors",
+    "receptions",
+    "reception_errors",
+    "conference",
+]
+
+expected_volleyball_players_columns = [
+    "lastname_initials",
+    "first_name",
+    "school",
+    "matches_played",
+    "sets_played",
+    # Offensive stats
+    "kills",
+    "kills_per_set",
+    "errors",
+    "total_attacks",
+    "total_attacks_per_set",
+    "hitting_percentage",
+    "assists",
+    "assists_per_set",
+    "points",
+    "points_per_set",
+    # Defensive stats
+    "digs",
+    "digs_per_set",
+    "block_solos",
+    "block_assists",
+    "total_blocks",
+    "blocks_per_set",
+    # Serve/Receive stats
+    "serve_attempts",
+    "service_aces",
+    "service_aces_per_set",
+    "service_errors",
+    "receptions",
+    "reception_errors",
+]

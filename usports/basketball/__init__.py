@@ -20,7 +20,7 @@ Author:
     OJ Adeyemi
 
 Date Created:
-    February 1, 2025
+    February 2025
 """
 
 from .player_stats import usports_bball_players

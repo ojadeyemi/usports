@@ -63,5 +63,5 @@ ICE_HOCKEY_FBALL_STANDINGS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
     "total_points": int,
 }
 
-SKATERS_SORT_CATEGORIES = ["g", "a", "p", "pim", "plusminus", "ppg", "shg", "gw", "gt", "hat"]
-GOALIES_SORT_CATEGORIES = ["ggs", "gm", "ga", "gaa", "sv", "svpt", "gow", "gol", "got", "gpwpt"]
+SKATERS_SORT_CATEGORIES = ["g", "a", "p", "pim", "plusminus", "ppg"]
+GOALIES_SORT_CATEGORIES = ["ggs", "gm", "sv", "svpt", "gow"]
