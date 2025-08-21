@@ -7,11 +7,18 @@ BASE_URL = "https://universitysport.prestosports.com/sports"
 FALL_SEASON = "2024-25"
 WINTER_SEASON = "2024-25"
 
+BASKETBALL = "basketball"
+FOOTBALL = "football"
+ICE_HOCKEY = "ice_hockey"
+SOCCER = "soccer"
+VOLLEYBALL = "volleyball"
+
 
 # Current season based on sport type
 def get_current_season(sport: str) -> str:
     """Get current season based on sport type."""
-    fall_sports = ["football", "soccer"]
+    fall_sports = [FOOTBALL, SOCCER]
+
     if any(s in sport.lower() for s in fall_sports):
         return FALL_SEASON
     return WINTER_SEASON
@@ -31,11 +38,6 @@ PLAYER_SEASON_TOTALS_STATS_START_INDEX = 3
 BASKETBALL_PLAYER_STATS_OFFSET = 5
 FOOTBALL_PLAYER_STATS_OFFSET = 3
 
-BASKETBALL = "basketball"
-FOOTBALL = "football"
-ICE_HOCKEY = "ice_hockey"
-SOCCER = "soccer"
-VOLLEYBALL = "volleyball"
 
 # Conference mappings (shared across all sports)
 DEFAULT_SCHOOL_CONFERENCES = {
@@ -107,6 +109,7 @@ LEAGUE_CONFERENCE_OVERRIDES = {
         "Dalhousie": RSEQ,  # Dalhousie is normally AUS, but in volleyball they're RSEQ
         "UNB": RSEQ,
     },
+    SOCCER: {},
 }
 
 

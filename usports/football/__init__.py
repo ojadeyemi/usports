@@ -8,11 +8,11 @@ These functions return pandas DataFrames with the requested statistics.
 Examples:
 >>> from usports.football import usports_fball_teams, usports_fball_players, usports_fball_standings
 
->>> regular_season_team_stats = usports_fball_teams('regular_season')
+>>> regular_team_stats = usports_fball_teams('regular')
 >>> playoff_team_stats = usports_fball_teams('playoffs')
 >>> championship_team_stats = usports_fball_teams('championship')
 
->>> regular_season_player_stats = usports_fball_players('regular_season')
+>>> regular_player_stats = usports_fball_players('regular')
 >>> playoff_player_stats = usports_fball_players('playoffs')
 >>> championship_player_stats = usports_fball_players('championship')
 
@@ -22,7 +22,7 @@ Author:
     OJ Adeyemi
 
 Date Created:
-     March 2025
+    March 2025
 """
 
 from .player_stats import usports_fball_players

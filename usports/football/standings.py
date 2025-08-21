@@ -86,6 +86,8 @@ async def _get_standings_df(standings_url: str) -> pd.DataFrame:
     standings_df = standings_df.drop(columns=["ties"])
     conference_map = get_conference_mapping_for_league(FOOTBALL)
 
+    standings_df: pd.DataFrame = standings_df.copy()
+
     standings_df["conference"] = standings_df["team_name"].map(conference_map).astype(str)
 
     return standings_df

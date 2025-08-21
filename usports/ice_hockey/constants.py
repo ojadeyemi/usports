@@ -39,17 +39,17 @@ ICE_HOCKEY_PLAYER_STATS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
 }
 
 ICE_HOCKEY_GOALIE_STATS_COLUMNS_TYPE_MAPPING: dict[str, type] = {
-    "games_played": int,
-    "games_started": int,
-    "minutes_played": int,
-    "goals_against": int,
-    "goals_against_average": float,
-    "saves": int,
-    "save_percentage": float,
-    "wins": int,
-    "losses": int,
-    "ties": int,
-    "win_percentage": float,
+    "goalie_games_played": int,
+    "goalie_games_started": int,
+    "goalie_minutes_played": float,
+    "goalie_goals_against": int,
+    "goalie_goals_against_average": float,
+    "goalie_saves": int,
+    "goalie_save_percentage": float,
+    "goalie_wins": int,
+    "goalie_losses": int,
+    "goalie_ties": int,
+    "goalie_win_percentage": float,
 }
 
 ICE_HOCKEY_FBALL_STANDINGS_COLUMNS_TYPE_MAPPING: dict[str, type] = {

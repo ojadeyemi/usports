@@ -121,6 +121,7 @@ async def _fetch_team_stats(league: LeagueType, season: SeasonType) -> pd.DataFr
 
     return await _get_team_stats_df(team_stats_url)
 
+
 def usports_bball_teams(
     league: LeagueType,
     season_option: SeasonType = "regular",

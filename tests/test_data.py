@@ -317,16 +317,18 @@ expected_ice_hockey_players_columns = [
     "game_tying_goals",
     "hat_tricks",
     "shots_on_goal",
-    "role",
-    "minutes_played",
-    "goals_against",
-    "goals_against_average",
-    "saves",
-    "save_percentage",
-    "wins",
-    "losses",
-    "ties",
-    "win_percentage",
+    "role",  # skater or goalie
+    "goalie_games_played",
+    "goalie_games_started",
+    "goalie_minutes_played",
+    "goalie_goals_against",
+    "goalie_goals_against_average",
+    "goalie_saves",
+    "goalie_save_percentage",
+    "goalie_wins",
+    "goalie_losses",
+    "goalie_ties",
+    "goalie_win_percentage",
 ]
 
 expected_volleyball_standings_columns = [
@@ -402,4 +404,70 @@ expected_volleyball_players_columns = [
     "service_errors",
     "receptions",
     "reception_errors",
+]
+
+expected_soccer_standings_columns = [
+    "team_name",
+    "games_played",
+    "total_wins",
+    "total_losses",
+    "ties",
+    "goals_for",
+    "goals_against",
+    "points",
+    "conference",
+]
+
+expected_soccer_team_stats_columns = [
+    "team_name",
+    "games_played",
+    # Offensive stats
+    "shots",
+    "goals",
+    "goals_per_game",
+    "assists",
+    "points",
+    "shot_percentage",
+    "shots_per_game",
+    # Defensive stats
+    "goals_against",
+    "goals_against_average",
+    "saves",
+    "shutouts",
+    # Misc stats
+    "yellow_cards",
+    "red_cards",
+    "corner_kicks",
+    "conference",
+]
+
+expected_soccer_players_columns = [
+    "lastname_initials",
+    "first_name",
+    "school",
+    "position",  # 'goalie' or 'field'
+    # Field player stats
+    "games_played",
+    "games_started",
+    "goals",
+    "assists",
+    "points",
+    "shots",
+    "shot_percentage",
+    "shots_on_goal",
+    "sog_percentage",
+    "yellow_cards",
+    "red_cards",
+    "penalty_kicks",
+    "game_winning_goals",
+    # Goalie-specific stats
+    "goalie_games_started",
+    "goalie_goals_against",
+    "goalie_saves",
+    "goalie_save_percentage",
+    "goalie_wins",
+    "goalie_losses",
+    "goalie_ties",
+    "goalie_shutouts",
+    "goalie_minutes_played",
 ]

@@ -39,3 +39,6 @@ coverage.xml
 cover/
 
 *test.html
+
+# Claude Code
+CLAUDE.md

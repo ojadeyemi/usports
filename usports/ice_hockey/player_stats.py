@@ -57,7 +57,7 @@ def _parse_player_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[d
                 col_index = i + PLAYER_SEASON_TOTALS_STATS_START_INDEX
                 if col_index < len(cols):
                     value = clean_text(cols[col_index].get_text())
-                    if col_name == "minutes_played" and ":" in value:
+                    if col_name == "goalie_minutes_played" and ":" in value:
                         minutes, seconds = value.split(":")
                         row_data[col_name] = float(minutes) + float(seconds) / 60
                     else:

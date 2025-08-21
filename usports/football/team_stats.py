@@ -25,13 +25,8 @@ from .constants import FBALL_BBALL_TEAM_STATS_COLUMNS_TYPE_MAPPING
 logger = setup_logging()
 
 
-def _parse_football_team_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
-    """
-    Parse football team stats data from an HTML table without casting,
-    leaving type conversion to later DataFrame processing.
-    """
-    table_data: list[dict[str, Any]] = []
-    rows: list[Tag] = soup.find_all("tr")[1:]  # type: ignore
+def _process_column_data(row_data: dict[str, Any], cols: list[Tag], columns: list[str]) -> None:
+    """Process all column data and add to row_data."""
     dash_split_mapping = {
         "field_goal_made": "field_goal_attempt",
         "extra_point_made": "extra_point_attempt",
@@ -46,63 +41,98 @@ def _parse_football_team_stats_table(soup: BeautifulSoup, columns: list[str]) ->
         "fumbles": "fumbles_lost",
     }
 
+    for j, col in enumerate(columns):
+        col_index = j + 3
+        if col_index < len(cols):
+            raw_value = cols[col_index].get_text().strip()
+            processed_value = _process_single_column(col, raw_value, dash_split_mapping, row_data)
+            if processed_value is not None:
+                row_data[col] = processed_value
+
+
+def _process_single_column(
+    col: str, raw_value: str, dash_split_mapping: dict[str, str], row_data: dict[str, Any]
+) -> Any:
+    """Process a single column value based on column type."""
+    match col:
+        case "pass_completions":
+            return _process_pass_completions(raw_value, row_data)
+        case "interception_yards":
+            return _process_interception_yards(raw_value)
+        case "time_of_possession":
+            return _process_time_of_possession(raw_value)
+        case col if col in ["home_attendance", "average_home_attendance"]:
+            return _process_attendance(raw_value)
+        case col if col in dash_split_mapping:
+            return _process_dash_split_column(col, raw_value, dash_split_mapping, row_data)
+        case _ if "%" in raw_value:
+            return raw_value.replace("%", "")
+        case _:
+            return raw_value
+
+
+def _process_pass_completions(raw_value: str, row_data: dict[str, Any]) -> str:
+    """Process pass completions field with format: completions-attempts-interceptions."""
+    parts = raw_value.split("-")
+    if len(parts) == 3:
+        row_data["pass_attempts"] = parts[1]
+        row_data["pass_interceptions"] = parts[2]
+        return parts[0]
+    return raw_value
+
+
+def _process_interception_yards(raw_value: str) -> str:
+    """Process interception yards, taking last part if dash-separated."""
+    if "-" in raw_value:
+        return raw_value.split("-")[-1]
+    return raw_value
+
+
+def _process_dash_split_column(
+    col: str, raw_value: str, dash_split_mapping: dict[str, str], row_data: dict[str, Any]
+) -> str | int:
+    """Process columns that need dash splitting."""
+    try:
+        made, second_val = split_made_attempted(raw_value)
+        derived_key = dash_split_mapping[col]
+        row_data[derived_key] = second_val
+        return made
+    except ValueError as e:
+        print(f"Error splitting '{raw_value}' for column '{col}': {e}")
+        return raw_value
+
+
+def _process_attendance(raw_value: str) -> Any:
+    """Process attendance fields by removing commas and converting to int."""
+    try:
+        return int(raw_value.replace(",", ""))
+    except ValueError:
+        return raw_value.replace(",", "")
+
+
+def _process_time_of_possession(raw_value: str) -> Any:
+    """Convert time format MM:SS to total seconds."""
+    try:
+        minutes, seconds = raw_value.split(":")
+        return int(minutes) * 60 + int(seconds)
+    except Exception:
+        return raw_value
+
+
+def _parse_football_team_stats_table(soup: BeautifulSoup, columns: list[str]) -> list[dict[str, Any]]:
+    """Parse football team stats data from an HTML table without casting."""
+    table_data: list[dict[str, Any]] = []
+    rows: list[Tag] = soup.find_all("tr")[1:]  # type: ignore
+
     for row in rows:
         cols: list[Tag] = row.find_all("td")  # type: ignore
         if len(cols) > 1:
             row_data = {}
-            row_data["team_name"] = clean_text(cols[1].get_text())
-            row_data["games_played"] = clean_text(cols[2].get_text())
-
-            for j, col in enumerate(columns):
-                col_index = j + 3
-                if col_index < len(cols):
-                    raw_value = cols[col_index].get_text().strip()
-
-                    if col == "pass_completions":
-                        parts = raw_value.split("-")
-                        if len(parts) == 3:
-                            row_data["pass_completions"] = parts[0]
-                            row_data["pass_attempts"] = parts[1]
-                            row_data["pass_interceptions"] = parts[2]
-                        else:
-                            row_data["pass_completions"] = raw_value
-
-                    elif col == "interception_yards":
-                        if "-" in raw_value:
-                            parts = raw_value.split("-")
-                            row_data[col] = parts[-1]
-                        else:
-                            row_data[col] = raw_value
-
-                    elif col in dash_split_mapping:
-                        try:
-                            made, second_val = split_made_attempted(raw_value)
-                            row_data[col] = made
-                            derived_key = dash_split_mapping[col]
-                            row_data[derived_key] = second_val
-                        except ValueError as e:
-                            print(f"Error splitting '{raw_value}' for column '{col}': {e}")
-                            row_data[col] = raw_value
-
-                    elif col in ["home_attendance", "average_home_attendance"]:
-                        try:
-                            row_data[col] = int(raw_value.replace(",", ""))
-                        except ValueError:
-                            row_data[col] = raw_value.replace(",", "")
-
-                    elif col == "time_of_possession":
-                        try:
-                            minutes, seconds = raw_value.split(":")
-                            row_data[col] = int(minutes) * 60 + int(seconds)
-                        except Exception:
-                            row_data[col] = raw_value
-
-                    elif "%" in raw_value:
-                        row_data[col] = raw_value.replace("%", "")
-
-                    else:
-                        row_data[col] = raw_value
-
+            team_name = clean_text(cols[1].get_text())
+            games_played = clean_text(cols[2].get_text())
+            row_data["team_name"] = team_name
+            row_data["games_played"] = games_played
+            _process_column_data(row_data, cols, columns)
             table_data.append(row_data)
 
     return table_data
