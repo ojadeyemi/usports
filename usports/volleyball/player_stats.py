@@ -118,7 +118,9 @@ async def _get_players_stats_df(stats_url: str) -> pd.DataFrame:
     if not player_stats or df.empty:
         return pd.DataFrame(columns=combined_type_mapping.keys())  # type: ignore
 
+    # Drop rows where player_name is missing or empty
     if "player_name" in df.columns:
+        df = df[df["player_name"].notna() & (df["player_name"].str.strip() != "")]
         df[["lastname_initials", "first_name"]] = df["player_name"].str.split(" ", n=1, expand=True)
 
     df = convert_types(df, combined_type_mapping)

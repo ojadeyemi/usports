@@ -106,6 +106,9 @@ async def _get_players_stats_df(stats_url: str) -> pd.DataFrame:
     if not player_stats or df.empty:
         return pd.DataFrame(columns=combined_type_mapping.keys())  # type: ignore
 
+    # Remove rows where player_name is empty or null
+    df = df[df["player_name"].notna() & (df["player_name"].str.strip() != "")]
+
     if "player_name" in df.columns:
         df[["lastname_initials", "first_name"]] = df["player_name"].str.split(" ", n=1, expand=True)
 

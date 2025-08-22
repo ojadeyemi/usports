@@ -179,6 +179,13 @@ async def _fetch_and_merge_player_stats(player_stats_urls: list[str], goalie_sta
     final_df = pd.concat(cleaned_dfs, ignore_index=True).drop_duplicates(
         subset=["lastname_initials", "first_name", "school", "games_played", "role"]
     )
+    # Ensure that player names are not empty or NaN
+    final_df = final_df[
+        (final_df["lastname_initials"].notna())
+        & (final_df["lastname_initials"] != "")
+        & (final_df["first_name"].notna())
+        & (final_df["first_name"] != "")
+    ]
 
     final_df.fillna(0, inplace=True)
 

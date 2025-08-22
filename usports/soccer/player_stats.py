@@ -261,6 +261,10 @@ async def _get_players_stats_df_final(goalie_urls: list[str], field_urls: list[s
     for mapping in SOCCER_PLAYER_STATS_COLUMNS_TYPE_MAPPING:
         combined_type_mapping.update(mapping)
 
+    # Remove rows where player_name is empty or NaN
+    if "player_name" in df.columns:
+        df = df[df["player_name"].notna() & (df["player_name"].str.strip() != "")]
+
     # Split player name
     if "player_name" in df.columns:
         df[["lastname_initials", "first_name"]] = df["player_name"].str.split(" ", n=1, expand=True)
