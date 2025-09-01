@@ -1,6 +1,7 @@
 """Football API tests."""
 
 import pandas as pd
+import pytest
 
 from usports.football import usports_fball_players, usports_fball_standings, usports_fball_teams
 
@@ -8,6 +9,7 @@ from .test_data import (
     expected_football_column_names,
     expected_football_players_df_column,
     expected_football_standings_columns,
+    should_test_playoffs,
 )
 
 
@@ -36,8 +38,16 @@ class TestFootballTeams:
         missing_columns = [col for col in expected_football_column_names if col not in actual_columns]
         assert not missing_columns, f"Missing columns in team stats: {missing_columns}"
 
+    @pytest.mark.skipif(
+        not should_test_playoffs("football"), reason="Playoff data only available in November and December"
+    )
+    def test_playoff_data_structure(self):
         # Test playoffs data and column consistency
+        regular_df = usports_fball_teams("regular")
         playoffs_df = usports_fball_teams("playoffs")
+
+        assert isinstance(playoffs_df, pd.DataFrame), "Should return a pandas DataFrame"
+
         if not playoffs_df.empty:
             regular_cols = set(regular_df.columns)
             playoffs_cols = set(playoffs_df.columns)

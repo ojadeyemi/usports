@@ -17,10 +17,10 @@ poetry add git+https://github.com/ojadeyemi/usports.git
 | Sport      | Status       | League      | Data Types                |
 | ---------- | ------------ | ----------- | ------------------------- |
 | Basketball | ✅ Available | Men & Women | Players, Teams, Standings |
-| Football   | ✅ Available | Men         | Players, Teams, Standings |
 | Ice Hockey | ✅ Available | Men & Women | Players, Teams, Standings |
 | Volleyball | ✅ Available | Men & Women | Players, Teams, Standings |
 | Soccer     | ✅ Available | Men & Women | Players, Teams, Standings |
+| Football   | 🚧 Coming soon | Men         | Players, Teams, Standings |
 
 ## 🎯 Usage
 

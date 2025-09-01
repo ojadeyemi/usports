@@ -1,5 +1,30 @@
 """Expected column names for all USports functions."""
 
+import datetime
+
+
+def should_test_playoffs(sport):
+    """Determine if playoff tests should run based on current month and sport.
+
+    Args:
+        sport: Sport name ('football', 'soccer', 'basketball', 'ice_hockey', 'volleyball')
+
+    Returns:
+        bool: True if playoff tests should run, False otherwise
+    """
+    current_month = datetime.datetime.now().month
+
+    # Fall sports: test playoffs in November and December
+    if sport in ["football", "soccer"]:
+        return current_month in [11, 12]
+
+    # Winter sports: test playoffs in February and March
+    if sport in ["basketball", "ice_hockey", "volleyball"]:
+        return current_month in [2, 3]
+
+    return False
+
+
 expected_basketball_standings_columns = [
     "team_name",
     "games_played",
@@ -37,6 +62,7 @@ expected_basketball_team_stats_columns = [
     "offensive_efficiency",
     "defensive_efficiency",
     "net_efficiency",
+    "net_efficiency_against",
     "field_goal_made_against",
     "field_goal_attempted_against",
     "field_goal_percentage_against",
@@ -81,6 +107,7 @@ expected_basketball_players_columns = [
     "turnovers",
     "steals",
     "blocks",
+    "assist_to_turnover_ratio",
     "personal_fouls",
     "disqualifications",
 ]

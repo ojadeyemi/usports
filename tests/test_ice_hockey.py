@@ -1,6 +1,7 @@
 """Ice Hockey API tests."""
 
 import pandas as pd
+import pytest
 
 from usports.ice_hockey import usports_ice_hockey_players, usports_ice_hockey_standings, usports_ice_hockey_teams
 
@@ -8,6 +9,7 @@ from .test_data import (
     expected_ice_hockey_players_columns,
     expected_ice_hockey_standings_columns,
     expected_ice_hockey_team_stats_columns,
+    should_test_playoffs,
 )
 
 
@@ -36,8 +38,16 @@ class TestIceHockeyTeams:
         missing_columns = [col for col in expected_ice_hockey_team_stats_columns if col not in actual_columns]
         assert not missing_columns, f"Missing columns in team stats: {missing_columns}"
 
+    @pytest.mark.skipif(
+        not should_test_playoffs("ice_hockey"), reason="Playoff data only available in February and March"
+    )
+    def test_playoff_data_structure(self):
         # Test playoffs data and column consistency
+        regular_df = usports_ice_hockey_teams("m", "regular")
         playoffs_df = usports_ice_hockey_teams("m", "playoffs")
+
+        assert isinstance(playoffs_df, pd.DataFrame), "Should return a pandas DataFrame"
+
         if not playoffs_df.empty:
             regular_cols = set(regular_df.columns)
             playoffs_cols = set(playoffs_df.columns)

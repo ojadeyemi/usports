@@ -4,7 +4,7 @@
 BASE_URL = "https://universitysport.prestosports.com/sports"
 
 # Season identifiers
-FALL_SEASON = "2024-25"
+FALL_SEASON = "2025-26"
 WINTER_SEASON = "2024-25"
 
 BASKETBALL = "basketball"
