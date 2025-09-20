@@ -85,6 +85,7 @@ DEFAULT_SCHOOL_CONFERENCES = {
     "Trent": OUA,
     "Trinity Western": CW,
     "UBC": CW,
+    "UBCO": CW,
     "UBC Okanagan": CW,
     "UFV": CW,
     "UNB": AUS,
